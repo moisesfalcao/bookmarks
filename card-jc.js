@@ -697,14 +697,13 @@
             backgroundColor: null,
             scale: window.devicePixelRatio || 1,
             imageTimeout: 0,
-            // chave: deixa o html2canvas baixar via proxy quando não conseguir direto
-            proxy: CONFIG.proxy,
+            proxy: CONFIG.proxy, // deixa o html2canvas baixar via proxy se precisar
           }).then((canvas) => {
-            const now = a new Date();
+            const now = new Date(); // ✅ corrigido
             const pad = (n) => String(n).padStart(2, "0");
-            const timestamp = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(
-              now.getHours()
-            )}-${pad(now.getMinutes())}`;
+            const timestamp =
+              `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_` +
+              `${pad(now.getHours())}-${pad(now.getMinutes())}`;
             const pageTitle = document.title.replace(/[\\\/:*?"<>|]/g, "").trim();
             const host = location.host.replace(/[\\\/:*?"<>|]/g, "").trim();
             const fileName = (pageTitle || host || "post-thumbnail") + "_" + timestamp + ".jpg";
@@ -715,6 +714,7 @@
             restore();
           });
         }
+
       };
 
       // disable visual zoom, then capture
