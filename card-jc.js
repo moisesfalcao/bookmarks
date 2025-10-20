@@ -227,16 +227,18 @@
     bottomStack.id = "ig-bottom-stack";
     Object.assign(bottomStack.style, {
       position: "absolute",
-      left: "2%",
-      right: "2%",
-      bottom: "2%",
+      left: "0",
+      right: "0",
+      bottom: "0",
       display: "flex",
       flexDirection: "column",
       alignItems: "flex-start",
       gap: "10px",
-      width: "96%",
+      width: "100%",
       boxSizing: "border-box",
       zIndex: "3",
+      height: "100%",
+      justifyContent: "space-between",
     });
     thumbnail.appendChild(bottomStack);
   }
