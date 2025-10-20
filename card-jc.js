@@ -267,7 +267,7 @@
       borderRadius: "8px",
       display: "block",
       filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.4))",
-      padding: "4rem 3rem" ,
+      margin: "4rem 3rem" ,
     });
     (async () => {
       try {
