@@ -111,7 +111,7 @@
 
     const brandImg = document.createElement("img");
     brandImg.src =
-      "https://obrasilianista.com.br/wp-content/uploads/2025/09/cropped-brasilianista-icone-180x180.png";
+      "https://imagens.ne10.uol.com.br/template-unificado/images/jc-new/favicon/ms-icon-144x144.png";
     Object.assign(brandImg.style, {
       width: "48px",
       height: "48px",
@@ -122,7 +122,7 @@
     });
 
     const brandText = document.createElement("span");
-    brandText.textContent = "obrasilianista.com.br";
+    brandText.textContent = "jc.com.br";
     Object.assign(brandText.style, {
       fontFamily: "system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif",
       fontSize: "20px",
