@@ -40,7 +40,7 @@
       alignItems: "center",
       width: "1200px",
       height: "1200px",
-      backgroundColor: "#030139",
+      backgroundColor: "#000000",
       overflow: "hidden",
     });
     const img = el.querySelector("img");
@@ -153,7 +153,7 @@
   }
 
   document.querySelectorAll(".article-subtitle").forEach((el) => {
-    Object.assign(el.style, { color: "#fff", padding: "0", margin: "0" });
+    Object.assign(el.style, { color: "#fff", padding: "0 0 0 1rem", margin: "0" });
   });
   document.querySelectorAll(".article-header-jc-new").forEach((el) => {
     el.style.color = "#fff";
