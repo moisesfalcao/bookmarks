@@ -1,4 +1,94 @@
 (function () {
+  // =========================
+  // 🔧 CONFIGURAÇÕES RÁPIDAS
+  // =========================
+  const CONFIG = {
+    // —— Seletores do DOM do site atual ——
+    selectors: {
+      // Contêiner do card (onde a imagem de fundo e os textos vão aparecer)
+      cardContainer: ".featured-image",
+
+      // A imagem dentro do contêiner (usada como background)
+      cardImage: ".featured-image img",
+
+      // Header/box que contém título e subtítulos (será posicionado dentro do card)
+      articleHeader: ".article-header-jc-new",
+
+      // Título principal
+      title: ".article-title",
+
+      // Subtítulos / resumo (NodeList)
+      excerpt: ".article-subtitle",
+
+      // (Opcional) Wrapper de post, caso você precise zerar padding/margin
+      postWrapper: "#single",
+
+      // (Opcional) Elemento que deve ser capturado pelo html2canvas (default = cardContainer)
+      captureTarget: null, // ex.: ".featured-image" | null → usa cardContainer
+    },
+
+    // —— Elementos a ocultar no site (lista de seletores) ——
+    hide: [
+      "#header",
+      ".hat",
+      "#barrauol",
+      ".author-signature",
+      "#load-unified-ad-1",
+      ".content-news",
+      "figcaption",
+      ".latest-news-jc-new",
+      ".post-caption",
+      ".post-content",
+      "footer",
+      "#div-gpt-ad-1757003575651-0",
+      "#banner-anchor-area",
+      ".share-news-jc-new"
+    ],
+
+    // —— Ajustes visuais do card ——
+    card: {
+      width: 1200,           // px
+      height: 1200,          // px (muda para 1500 no modo 4:5)
+      backgroundColor: "#000000",
+      // Proporções disponíveis
+      aspectHeights: { "1:1": 1200, "4:5": 1500 },
+    },
+
+    // —— Barra de marca (ícone + texto) ——
+    brand: {
+      iconUrl: "https://imagens.ne10.uol.com.br/template-unificado/images/jc-new/favicon/ms-icon-144x144.png",
+      text: "jc.com.br",
+      textColor: "#fff",
+      iconSize: 48, // px
+    },
+
+    // —— Box de texto (header dentro do card) ——
+    headerBox: {
+      background: "#000",  // cor de fundo
+      radius: 0,           // px
+      padding: "1rem",
+      textColor: "#fff",
+    },
+
+    // —— Painel de controles (UI) ——
+    ui: {
+      pageZoomInitial: 0.63, // 63%
+      panelBg: "#0b0b2a",
+      panelText: "#fff",
+      panelWidth: 260, // px
+    },
+
+    // —— Forçar remoção do pseudo-elemento body::before (override CSS) ——
+    removeBodyBefore: true,
+
+    // —— html2canvas CDN ——
+    html2canvasUrl: "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js",
+  };
+
+  // =========================
+  // ⚠️ Não edite abaixo (a menos que queira mudar o comportamento)
+  // =========================
+
   // Evita injetar duplicado
   if (window.__OBR_CARD_ACTIVE__) {
     const panel = document.getElementById("ig-font-controls");
@@ -9,35 +99,24 @@
   }
   window.__OBR_CARD_ACTIVE__ = true;
 
-  const st = document.createElement('style');
-st.textContent = `
-  body::before { content: none !important; background: none !important; height: 0 !important; }
-`;
-document.head.appendChild(st);
-
-
-  const hide = (selector) =>
-    document.querySelectorAll(selector).forEach((el) => (el.style.display = "none"));
+  // Helpers
+  const $ = (sel, root = document) => root.querySelector(sel);
+  const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+  const hideAll = (selector) => $$(selector).forEach((el) => (el.style.display = "none"));
   const pxToNumber = (px) => (px ? parseFloat(px) : null);
 
-  // Esconder coisas fora do card
-  const headerEl = document.getElementById("header");
-  if (headerEl) headerEl.style.display = "none";
-  hide(".hat");
-  hide("#barrauol");
-  hide(".author-signature");
-  hide("#load-unified-ad-1");
-  hide(".content-news");
-  hide("figcaption");
-  hide(".latest-news-jc-new");
-  hide(".post-caption");
-  hide(".post-content");
-  hide("footer");
-  hide("#div-gpt-ad-1757003575651-0");
-  hide("#banner-anchor-area");
+  // 0) Remover pseudo-elemento do body (se configurado)
+  if (CONFIG.removeBodyBefore) {
+    const st = document.createElement("style");
+    st.textContent = `body::before{content:none!important;background:none!important;height:0!important;}`;
+    document.head.appendChild(st);
+  }
 
-  // Card 1200x1200 + camada de fundo sem distorção
-  document.querySelectorAll(".featured-image").forEach((el) => {
+  // 1) Ocultar elementos do site
+  CONFIG.hide.forEach(hideAll);
+
+  // 2) Ajustar card base + camada de fundo (sem distorção)
+  $$(CONFIG.selectors.cardContainer).forEach((el) => {
     Object.assign(el.style, {
       margin: "0",
       padding: "0",
@@ -45,13 +124,14 @@ document.head.appendChild(st);
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
-      width: "1200px",
-      height: "1200px",
-      backgroundColor: "#000000",
+      width: CONFIG.card.width + "px",
+      height: CONFIG.card.height + "px",
+      backgroundColor: CONFIG.card.backgroundColor,
       overflow: "hidden",
     });
-    const img = el.querySelector("img");
-    let bgLayer = el.querySelector("#ig-bg-layer");
+
+    const img = $(CONFIG.selectors.cardImage, el);
+    let bgLayer = $("#ig-bg-layer", el);
     if (!bgLayer) {
       bgLayer = document.createElement("div");
       bgLayer.id = "ig-bg-layer";
@@ -74,17 +154,21 @@ document.head.appendChild(st);
     }
   });
 
-  document.querySelectorAll("#single").forEach((el) => {
-    el.style.padding = "0";
-    el.style.margin = "0";
-  });
+  // 3) Zerar padding/margin do wrapper (se existir)
+  if (CONFIG.selectors.postWrapper) {
+    $$(CONFIG.selectors.postWrapper).forEach((el) => {
+      el.style.padding = "0";
+      el.style.margin = "0";
+    });
+  }
 
-  const thumbnail = document.querySelector(".featured-image");
-  const bgLayer = thumbnail ? thumbnail.querySelector("#ig-bg-layer") : null;
-  let articleHeader = document.querySelector(".article-header-jc-new");
+  // 4) Pegar nós principais
+  const thumbnail = $(CONFIG.selectors.cardContainer);
+  const bgLayer = thumbnail ? $("#ig-bg-layer", thumbnail) : null;
+  let articleHeader = $(CONFIG.selectors.articleHeader);
 
-  // Stack inferior (marca + header azul)
-  let bottomStack = document.getElementById("ig-bottom-stack");
+  // 5) Stack inferior (marca + header)
+  let bottomStack = $("#ig-bottom-stack");
   if (!bottomStack && thumbnail) {
     bottomStack = document.createElement("div");
     bottomStack.id = "ig-bottom-stack";
@@ -104,7 +188,8 @@ document.head.appendChild(st);
     thumbnail.appendChild(bottomStack);
   }
 
-  let brandBar = document.getElementById("ig-brand-bar");
+  // 6) Barra de marca
+  let brandBar = $("#ig-brand-bar");
   if (!brandBar && bottomStack) {
     brandBar = document.createElement("div");
     brandBar.id = "ig-brand-bar";
@@ -112,16 +197,15 @@ document.head.appendChild(st);
       display: "flex",
       alignItems: "center",
       gap: "10px",
-      color: "#fff",
+      color: CONFIG.brand.textColor,
       zIndex: "3",
     });
 
     const brandImg = document.createElement("img");
-    brandImg.src =
-      "https://imagens.ne10.uol.com.br/template-unificado/images/jc-new/favicon/ms-icon-144x144.png";
+    brandImg.src = CONFIG.brand.iconUrl;
     Object.assign(brandImg.style, {
-      width: "48px",
-      height: "48px",
+      width: CONFIG.brand.iconSize + "px",
+      height: CONFIG.brand.iconSize + "px",
       objectFit: "cover",
       borderRadius: "8px",
       display: "block",
@@ -129,12 +213,12 @@ document.head.appendChild(st);
     });
 
     const brandText = document.createElement("span");
-    brandText.textContent = "jc.com.br";
+    brandText.textContent = CONFIG.brand.text;
     Object.assign(brandText.style, {
       fontFamily: "system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif",
       fontSize: "20px",
       fontWeight: "600",
-      color: "#fff",
+      color: CONFIG.brand.textColor,
       letterSpacing: "0.2px",
       textShadow: "0 1px 2px rgba(0,0,0,0.4)",
     });
@@ -143,41 +227,44 @@ document.head.appendChild(st);
     bottomStack.appendChild(brandBar);
   }
 
+  // 7) Header do artigo dentro do card
   if (articleHeader && bottomStack) {
     if (articleHeader.parentElement !== bottomStack) bottomStack.appendChild(articleHeader);
     Object.assign(articleHeader.style, {
       position: "static",
       display: "block",
-      background: "#020034f2",
+      background: CONFIG.headerBox.background,
       width: "100%",
       maxWidth: "none",
-      padding: "1rem",
-      borderRadius: "12px",
+      padding: CONFIG.headerBox.padding,
+      borderRadius: CONFIG.headerBox.radius + "px",
       boxSizing: "border-box",
-      color: "#fff",
+      color: CONFIG.headerBox.textColor,
       zIndex: "3",
     });
   }
 
-  document.querySelectorAll(".article-subtitle").forEach((el) => {
-    Object.assign(el.style, { color: "#fff", padding: "0 0 0 1rem", margin: "0" });
+  // 8) Cores básicas do texto
+  $$(CONFIG.selectors.excerpt).forEach((el) => {
+    Object.assign(el.style, { color: CONFIG.headerBox.textColor, padding: "0 0 0 1rem", margin: "0" });
   });
-  document.querySelectorAll(".article-header-jc-new").forEach((el) => {
-    el.style.color = "#fff";
+  $$(CONFIG.selectors.articleHeader).forEach((el) => {
+    el.style.color = CONFIG.headerBox.textColor;
     el.style.margin = "0";
   });
 
+  // ——— Recursos interativos (edição/escala/fundo/zoom/salvar) ———
   if (thumbnail && articleHeader && bgLayer) {
-    const titleEl = articleHeader.querySelector(".article-title");
-    const excerptEls = Array.from(articleHeader.querySelectorAll(".article-subtitle"));
+    const titleEl = $(CONFIG.selectors.title, articleHeader);
+    const excerptEls = $$(CONFIG.selectors.excerpt, articleHeader);
 
     // ===== Edição inline =====
     const editableFocusCSS = `
       #ig-editable-style {}
       [data-ig-editing="true"]{ outline:2px dashed rgba(255,255,255,.5); outline-offset:4px; cursor:text; }
-      [contenteditable="true"]{ caret-color:#fff; }
+      [contenteditable="true"]{ caret-color:${CONFIG.headerBox.textColor}; }
     `;
-    let styleTag = document.getElementById("ig-editable-style");
+    let styleTag = $("#ig-editable-style");
     if (!styleTag) {
       styleTag = document.createElement("style");
       styleTag.id = "ig-editable-style";
@@ -257,11 +344,11 @@ document.head.appendChild(st);
         el.style.fontSize = b.font * scale + "px";
         el.style.lineHeight = b.line * scale + "px";
       });
-      const indicator = document.getElementById("ig-scale-indicator");
+      const indicator = $("#ig-scale-indicator");
       if (indicator) indicator.textContent = Math.round(scale * 100) + "%";
     };
 
-    // ===== Fundo (sem distorção): zoom transform + offset por background-position
+    // ===== Fundo (sem distorção): transform scale + background-position
     let bgZoom = 1.0,
       bgPosX = 50,
       bgPosY = 50;
@@ -270,18 +357,18 @@ document.head.appendChild(st);
       bgLayer.style.backgroundPosition = `${bgPosX}% ${bgPosY}%`;
       bgLayer.style.transform = `scale(${bgZoom})`;
       bgLayer.style.transformOrigin = `${bgPosX}% ${bgPosY}%`;
-      const zOut = document.getElementById("ig-zoom-indicator");
+      const zOut = $("#ig-zoom-indicator");
       if (zOut) zOut.textContent = `${Math.round(bgZoom * 100)}%`;
-      const xOut = document.getElementById("ig-posx-indicator");
+      const xOut = $("#ig-posx-indicator");
       if (xOut) xOut.textContent = `${bgPosX}%`;
-      const yOut = document.getElementById("ig-posy-indicator");
+      const yOut = $("#ig-posy-indicator");
       if (yOut) yOut.textContent = `${bgPosY}%`;
     };
 
     // ===== Zoom de visualização (63% + fallback)
-    const Z_TARGET = 0.63;
+    const Z_TARGET = CONFIG.ui.pageZoomInitial;
     function ensureWrapExists() {
-      let wrap = document.getElementById("ig-scale-wrapper");
+      let wrap = $("#ig-scale-wrapper");
       if (!wrap && thumbnail && thumbnail.parentElement) {
         wrap = document.createElement("div");
         wrap.id = "ig-scale-wrapper";
@@ -289,12 +376,12 @@ document.head.appendChild(st);
         thumbnail.parentElement.insertBefore(wrap, thumbnail);
         wrap.appendChild(thumbnail);
       }
-      return wrap || document.getElementById("ig-scale-wrapper");
+      return wrap || $("#ig-scale-wrapper");
     }
     function applyViewportZoom(r) {
       document.documentElement.style.zoom = r;
       if ("zoom" in document.documentElement.style) {
-        const w = document.getElementById("ig-scale-wrapper");
+        const w = $("#ig-scale-wrapper");
         if (w) {
           w.style.transform = "none";
           w.style.width = "auto";
@@ -309,7 +396,7 @@ document.head.appendChild(st);
     }
     function resetViewportZoom() {
       document.documentElement.style.zoom = "";
-      const w = document.getElementById("ig-scale-wrapper");
+      const w = $("#ig-scale-wrapper");
       if (w) {
         w.style.transform = "none";
         w.style.width = "auto";
@@ -317,8 +404,8 @@ document.head.appendChild(st);
     }
     applyViewportZoom(Z_TARGET);
 
-    // ===== Painel
-    const old = document.getElementById("ig-font-controls");
+    // ===== Painel (UI)
+    const old = $("#ig-font-controls");
     if (old && old.parentElement) old.parentElement.removeChild(old);
 
     const panel = document.createElement("div");
@@ -334,19 +421,14 @@ document.head.appendChild(st);
       fontFamily: "system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif",
       fontSize: "14px",
       padding: "12px",
-      background: "#0b0b2a",
-      color: "#fff",
+      background: CONFIG.ui.panelBg,
+      color: CONFIG.ui.panelText,
       borderRadius: "10px",
       boxSizing: "border-box",
-      width: "260px",
+      width: CONFIG.ui.panelWidth + "px",
       zIndex: "9999",
       boxShadow: "0 6px 18px rgba(0,0,0,0.35)",
     });
-
-    const labelText = document.createElement("div");
-    labelText.textContent = "Tamanho do texto";
-    labelText.style.fontWeight = "600";
-    labelText.style.textAlign = "center";
 
     const mkBtn = (t, small) => {
       const b = document.createElement("button");
@@ -363,9 +445,15 @@ document.head.appendChild(st);
       });
       return b;
     };
+
+    // Texto
+    const labelText = document.createElement("div");
+    labelText.textContent = "Tamanho do texto";
+    labelText.style.fontWeight = "600";
+    labelText.style.textAlign = "center";
+
     const btnDec = mkBtn("–", false);
     const btnInc = mkBtn("+", false);
-
     const indicator = document.createElement("span");
     indicator.id = "ig-scale-indicator";
     indicator.textContent = "100%";
@@ -377,12 +465,23 @@ document.head.appendChild(st);
 
     const btnResetAll = mkBtn("Reset geral", true);
 
+    const rowTextUI = document.createElement("div");
+    Object.assign(rowTextUI.style, {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      gap: "6px",
+    });
+    rowTextUI.append(btnDec, indicator, btnInc);
+
+    // Fundo
     const sep1 = document.createElement("hr");
     Object.assign(sep1.style, {
       border: "none",
       borderTop: "1px solid #2a2a5a",
       margin: "6px 0",
     });
+
     const labelBg = document.createElement("div");
     labelBg.textContent = "Imagem de fundo";
     Object.assign(labelBg.style, { fontWeight: "600", textAlign: "center" });
@@ -397,6 +496,7 @@ document.head.appendChild(st);
       });
       return d;
     };
+
     const zoomRow = mkGridRow();
     const zoomInput = document.createElement("input");
     zoomInput.type = "range";
@@ -432,22 +532,15 @@ document.head.appendChild(st);
 
     const btnResetBg = mkBtn("Reset fundo", true);
 
-    // === Botão Ocultar/Mostrar Resumo ===
+    // Ocultar/mostrar resumo
     const btnToggleExcerpt = mkBtn("🪄 Ocultar resumo", true);
     let excerptsHidden = false;
-    btnToggleExcerpt.addEventListener("click", () => {
-      excerptsHidden = !excerptsHidden;
-      excerptEls.forEach((el) => (el.style.display = excerptsHidden ? "none" : "block"));
-      btnToggleExcerpt.textContent = excerptsHidden
-        ? "🪄 Mostrar resumo"
-        : "🪄 Ocultar resumo";
-    });
 
-    // === Proporção 1:1 / 4:5 ===
-    let currentAspect = "1:1"; // default
+    // Proporção 1:1 / 4:5
+    let currentAspect = "1:1";
     const setAspect = (aspect) => {
       currentAspect = aspect;
-      thumbnail.style.height = aspect === "4:5" ? "1500px" : "1200px";
+      thumbnail.style.height = (CONFIG.card.aspectHeights[aspect] || CONFIG.card.height) + "px";
       updateAspectButtons();
     };
     const labelAspect = document.createElement("div");
@@ -455,11 +548,7 @@ document.head.appendChild(st);
     Object.assign(labelAspect.style, { fontWeight: "600", textAlign: "center" });
 
     const rowAspect = document.createElement("div");
-    Object.assign(rowAspect.style, {
-      display: "flex",
-      gap: "8px",
-      justifyContent: "space-between",
-    });
+    Object.assign(rowAspect.style, { display: "flex", gap: "8px", justifyContent: "space-between" });
 
     const btnAspect11 = mkBtn("1:1", true);
     const btnAspect45 = mkBtn("4:5", true);
@@ -468,11 +557,8 @@ document.head.appendChild(st);
       btnAspect11.style.opacity = currentAspect === "1:1" ? "1" : "0.8";
       btnAspect45.style.opacity = currentAspect === "4:5" ? "1" : "0.8";
     }
-    btnAspect11.addEventListener("click", () => setAspect("1:1"));
-    btnAspect45.addEventListener("click", () => setAspect("4:5"));
-    updateAspectButtons();
 
-    // Zoom de visualização
+    // Visualização (zoom da página)
     const sepZ = document.createElement("hr");
     Object.assign(sepZ.style, {
       border: "none",
@@ -483,11 +569,10 @@ document.head.appendChild(st);
     labelView.textContent = "Visualização da página";
     Object.assign(labelView.style, { fontWeight: "600", textAlign: "center" });
 
-    const rowView = document.createElement("div");
-    Object.assign(rowView.style, { display: "flex", gap: "8px", justifyContent: "space-between" });
     const btnView63 = mkBtn("63%", true);
     const btnView100 = mkBtn("100%", true);
 
+    // Salvar
     const sep2 = document.createElement("hr");
     Object.assign(sep2.style, {
       border: "none",
@@ -496,7 +581,7 @@ document.head.appendChild(st);
     });
     const btnSave = mkBtn("💾 Salvar imagem", true);
 
-    // Ligações de eventos
+    // —— Eventos ——
     btnDec.addEventListener("click", () => {
       scale = Math.max(minScale, Math.round((scale - step) * 100) / 100);
       applyScale();
@@ -515,14 +600,14 @@ document.head.appendChild(st);
       posYInput.value = "50";
       applyScale();
       applyBackgroundTransform();
-      if (excerptsHidden) btnToggleExcerpt.click(); // volta a mostrar resumo
-      setAspect("1:1"); // reseta proporção
+      if (excerptsHidden) btnToggleExcerpt.click();
+      setAspect("1:1");
     });
 
     document.addEventListener("keydown", (ev) => {
       if (ev.ctrlKey || ev.metaKey) return;
       const active = document.activeElement;
-      if (active && active.isContentEditable) return; // não trapar atalhos enquanto edita
+      if (active && active.isContentEditable) return;
       if (ev.key === "=" || ev.key === "+") {
         ev.preventDefault();
         scale = Math.min(maxScale, Math.round((scale + step) * 100) / 100);
@@ -560,124 +645,129 @@ document.head.appendChild(st);
       applyBackgroundTransform();
     });
 
-    btnView63.addEventListener("click", () => applyViewportZoom(0.63));
+    btnToggleExcerpt.addEventListener("click", () => {
+      excerptsHidden = !excerptsHidden;
+      excerptEls.forEach((el) => (el.style.display = excerptsHidden ? "none" : "block"));
+      btnToggleExcerpt.textContent = excerptsHidden ? "🪄 Mostrar resumo" : "🪄 Ocultar resumo";
+    });
+
+    btnAspect11.addEventListener("click", () => setAspect("1:1"));
+    btnAspect45.addEventListener("click", () => setAspect("4:5"));
+    btnView63.addEventListener("click", () => applyViewportZoom(CONFIG.ui.pageZoomInitial));
     btnView100.addEventListener("click", () => resetViewportZoom());
 
-    // Montagem do painel (ordem dos elementos)
-    const rowTextUI = document.createElement("div");
-    Object.assign(rowTextUI.style, {
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "space-between",
-      gap: "6px",
-    });
-    rowTextUI.append(btnDec, indicator, btnInc);
+    // Montar UI (reutiliza os rows já criados acima)
 
-    const zoomWrap = document.createElement("div");
-    Object.assign(zoomWrap.style, { display: "flex", flexDirection: "column", gap: "4px" });
-    const zoomLabel = document.createElement("div");
-    zoomLabel.textContent = "Zoom";
-    zoomLabel.style.marginBottom = "4px";
-    zoomRow.append(zoomInput, zoomIndicator);
-    zoomWrap.append(zoomLabel, zoomRow);
+// zoomRow, posXRow, posYRow JÁ existem e foram criados antes com mkGridRow()
+// Só anexamos os inputs e indicadores neles, sem redeclarar:
+zoomRow.append(zoomInput, zoomIndicator);
+posXRow.append(posXInput, posXIndicator);
+posYRow.append(posYInput, posYIndicator);
 
-    const posXWrap = document.createElement("div");
-    Object.assign(posXWrap.style, { display: "flex", flexDirection: "column", gap: "4px" });
-    const posXLabel = document.createElement("div");
-    posXLabel.textContent = "Offset X";
-    posXLabel.style.marginBottom = "4px";
-    posXRow.append(posXInput, posXIndicator);
-    posXWrap.append(posXLabel, posXRow);
+// wrappers e labels
+const zoomWrap = document.createElement("div");
+Object.assign(zoomWrap.style, { display: "flex", flexDirection: "column", gap: "4px" });
+const zoomLabel = document.createElement("div");
+zoomLabel.textContent = "Zoom";
+zoomLabel.style.marginBottom = "4px";
+zoomWrap.append(zoomLabel, zoomRow);
 
-    const posYWrap = document.createElement("div");
-    Object.assign(posYWrap.style, { display: "flex", flexDirection: "column", gap: "4px" });
-    const posYLabel = document.createElement("div");
-    posYLabel.textContent = "Offset Y";
-    posYLabel.style.marginBottom = "4px";
-    posYRow.append(posYInput, posYIndicator);
-    posYWrap.append(posYLabel, posYRow);
+const posXWrap = document.createElement("div");
+Object.assign(posXWrap.style, { display: "flex", flexDirection: "column", gap: "4px" });
+const posXLabel = document.createElement("div");
+posXLabel.textContent = "Offset X";
+posXLabel.style.marginBottom = "4px";
+posXWrap.append(posXLabel, posXRow);
 
-    // seção de proporção
-    const sepAspect = document.createElement("hr");
-    Object.assign(sepAspect.style, {
-      border: "none",
-      borderTop: "1px solid #2a2a5a",
-      margin: "6px 0",
-    });
-    rowAspect.append(btnAspect11, btnAspect45);
+const posYWrap = document.createElement("div");
+Object.assign(posYWrap.style, { display: "flex", flexDirection: "column", gap: "4px" });
+const posYLabel = document.createElement("div");
+posYLabel.textContent = "Offset Y";
+posYLabel.style.marginBottom = "4px";
+posYWrap.append(posYLabel, posYRow);
 
-    panel.append(
-      // Texto
-      labelText,
-      rowTextUI,
-      btnResetAll,
-      // Fundo
-      sep1,
-      labelBg,
-      zoomWrap,
-      posXWrap,
-      posYWrap,
-      btnResetBg,
-      // Ocultar/mostrar resumo
-      btnToggleExcerpt,
-      // Proporção
-      sepAspect,
-      labelAspect,
-      rowAspect,
-      // Zoom de visualização
-      sepZ,
-      labelView
-    );
+// seção de proporção
+const sepAspect = document.createElement("hr");
+Object.assign(sepAspect.style, { border: "none", borderTop: "1px solid #2a2a5a", margin: "6px 0" });
+const aspectRow = document.createElement("div");
+Object.assign(aspectRow.style, { display: "flex", gap: "8px", justifyContent: "space-between" });
+aspectRow.append(btnAspect11, btnAspect45);
 
-    const zoomBtnsRow = document.createElement("div");
-    Object.assign(zoomBtnsRow.style, { display: "flex", gap: "8px" });
-    zoomBtnsRow.append(btnView63, btnView100);
-    panel.append(zoomBtnsRow);
+// monta o painel
+panel.append(
+  labelText,
+  rowTextUI,
+  btnResetAll,
+  sep1,
+  labelBg,
+  zoomWrap,
+  posXWrap,
+  posYWrap,
+  btnResetBg,
+  btnToggleExcerpt,
+  sepAspect,
+  labelAspect,
+  aspectRow,
+  sepZ,
+  labelView
+);
 
-    panel.append(
-      // Salvar
-      sep2,
-      btnSave
-    );
+const zoomBtnsRow = document.createElement("div");
+Object.assign(zoomBtnsRow.style, { display: "flex", gap: "8px" });
+zoomBtnsRow.append(btnView63, btnView100);
+panel.append(zoomBtnsRow, sep2, btnSave);
 
-    document.body.appendChild(panel);
+document.body.appendChild(panel);
 
     // Estados iniciais
     applyScale();
     applyBackgroundTransform();
-    setAspect("1:1"); // começa em 1:1
+    setAspect("1:1");
 
     // Salvar (desliga zoom visual temporariamente, força blur nos editáveis)
     btnSave.addEventListener("click", () => {
       [titleEl, ...excerptEls].forEach((el) => el && el.blur());
       const restore = () => applyViewportZoom(Z_TARGET);
       const doCapture = () => {
-        const target = document.querySelector(".post-thumbnail");
+        const targetSel = CONFIG.selectors.captureTarget || CONFIG.selectors.cardContainer;
+        const target = $(targetSel);
         if (!target) {
-          alert("Elemento .post-thumbnail não encontrado.");
+          alert(`Elemento ${targetSel} não encontrado.`);
           restore();
           return;
         }
-        html2canvas(target).then((canvas) => {
-          const now = new Date();
-          const pad = (n) => String(n).padStart(2, "0");
-          const timestamp = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(
-            now.getDate()
-          )}_${pad(now.getHours())}-${pad(now.getMinutes())}`;
-          const pageTitle = document.title.replace(/[\\\/:*?"<>|]/g, "").trim();
-          const fileName = (pageTitle || "post-thumbnail") + "_" + timestamp + ".jpg";
-          const link = document.createElement("a");
-          link.download = fileName;
-          link.href = canvas.toDataURL("image/jpeg", 0.95);
-          link.click();
-          restore();
-        });
+        if (!window.html2canvas) {
+          const s = document.createElement("script");
+          s.src = CONFIG.html2canvasUrl;
+          s.onload = () => snap(target);
+          document.body.appendChild(s);
+        } else {
+          snap(target);
+        }
+
+        function snap(node) {
+          html2canvas(node).then((canvas) => {
+            const now = new Date();
+            const pad = (n) => String(n).padStart(2, "0");
+            const timestamp = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(
+              now.getDate()
+            )}_${pad(now.getHours())}-${pad(now.getMinutes())}`;
+            const pageTitle = document.title.replace(/[\\\/:*?"<>|]/g, "").trim();
+            const host = location.host.replace(/[\\\/:*?"<>|]/g, "").trim();
+            const fileName = (pageTitle || host || "post-thumbnail") + "_" + timestamp + ".jpg";
+            const link = document.createElement("a");
+            link.download = fileName;
+            link.href = canvas.toDataURL("image/jpeg", 0.95);
+            link.click();
+            restore();
+          });
+        }
       };
       // desliga zoom visual antes de capturar
       resetViewportZoom();
       if (!window.html2canvas) {
         const s = document.createElement("script");
-        s.src = "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js";
+        s.src = CONFIG.html2canvasUrl;
         s.onload = () => doCapture();
         document.body.appendChild(s);
       } else {
