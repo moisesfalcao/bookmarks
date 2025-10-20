@@ -36,13 +36,13 @@
     },
     brand: {
       iconUrl: "https://imagens.ne10.uol.com.br/template-unificado/images/jc-new/favicon/ms-icon-144x144.png",
-      text: " ",
+      text: " ", // mantenho vazio como você colocou
       textColor: "#fff",
       iconSize: 130,
       iconMargin: "4rem 3rem",
     },
     headerBox: {
-      background: "#000",
+      background: "linear-gradient(to bottom,  rgba(0,0,0,0) 0%,rgba(0,0,0,1) 100%)",
       radius: 0,
       padding: "3rem",
       textColor: "#fff",
@@ -56,9 +56,8 @@
     removeBodyBefore: true,
     html2canvasUrl: "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js",
 
-    // >>>>> ADICIONE A URL DO SEU WORKER AQUI <<<<<
+    // >>>>> WORKER PARA BYPASS DE CORS <<<<<
     proxy: "https://spring-river-efc5.nlakedeveloper.workers.dev/",
-    // (opcional) Referer que o Worker enviará ao CDN
     proxyReferer: "https://jc.com.br",
   };
 
@@ -80,7 +79,7 @@
   const hideAll = (selector) => $$(selector).forEach((el) => (el.style.display = "none"));
   const pxToNumber = (px) => (px ? parseFloat(px) : null);
 
-  // --- NOVOS HELPERS: proxy + fetch seguro ---
+  // --- Proxy helpers ---
   function proxify(url) {
     try {
       const u = new URL(CONFIG.proxy);
@@ -103,24 +102,20 @@
 
   async function tryFetch(url) {
     const abs = new URL(url, location.href).href;
-
-    // 1ª tentativa: direto (se CORS permitir)
+    // direto
     try {
       const r1 = await fetch(abs, { mode: "cors", credentials: "omit" });
       if (r1.ok) return await blobToDataURL(await r1.blob());
     } catch {}
-
-    // 2ª tentativa: via proxy
+    // via proxy
     try {
       const r2 = await fetch(proxify(abs), { mode: "cors", credentials: "omit" });
       if (r2.ok) return await blobToDataURL(await r2.blob());
     } catch {}
-
     throw new Error("CORS block for " + abs);
   }
 
   async function fetchAsDataURL(url) {
-    // preserva assinatura antiga; agora usa tryFetch por baixo
     return await tryFetch(url);
   }
 
@@ -129,7 +124,7 @@
       const dataUrl = await tryFetch(url);
       bgDiv.style.backgroundImage = `url('${dataUrl}')`;
     } catch {
-      // fallback: tenta direto (pode falhar no save se CORS bloquear)
+      // fallback visual (pode não incluir no canvas se CORS bloquear)
       bgDiv.style.backgroundImage = `url('${url}')`;
     }
   }
@@ -191,7 +186,7 @@
       el.prepend(bgLayer);
     }
 
-    // Image source with OG fallback and data:URL inlining (via proxy se precisar)
+    // define imagem de fundo (com fallback og:image)
     (async () => {
       let src = img && (img.currentSrc || img.src);
       if (!src) src = getOgImage();
@@ -245,7 +240,7 @@
   }
 
   // =========================
-  // 6) Brand bar (icon + text) via tryFetch/proxy
+  // 6) Brand bar (icon + text)
   // =========================
   let brandBar = $("#ig-brand-bar");
   if (!brandBar && bottomStack) {
@@ -267,22 +262,22 @@
       borderRadius: "8px",
       display: "block",
       filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.4))",
-      margin: "4rem 3rem" ,
+      margin: CONFIG.brand.iconMargin,
     });
     (async () => {
       try {
         brandImg.src = await tryFetch(CONFIG.brand.iconUrl); // data:URL
       } catch {
-        brandImg.src = proxify(CONFIG.brand.iconUrl); // fallback (pode não funcionar no save)
+        brandImg.src = proxify(CONFIG.brand.iconUrl); // fallback
       }
     })();
 
     const brandText = document.createElement("span");
     brandText.textContent = CONFIG.brand.text;
     Object.assign(brandText.style, {
-      fontFamily: "system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif",
+      fontFamily: "'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif",
+      fontWeight: "700",
       fontSize: "20px",
-      fontWeight: "600",
       color: CONFIG.brand.textColor,
       letterSpacing: "0.2px",
       textShadow: "0 1px 2px rgba(0,0,0,0.4)",
@@ -293,7 +288,7 @@
   }
 
   // =========================
-  // 7) Article header in card
+  // 7) Article header in card (aplica Poppins)
   // =========================
   if (articleHeader && bottomStack) {
     if (articleHeader.parentElement !== bottomStack) bottomStack.appendChild(articleHeader);
@@ -303,32 +298,53 @@
       background: CONFIG.headerBox.background,
       width: "100%",
       maxWidth: "none",
-      padding: "3rem",
+      padding: CONFIG.headerBox.padding,
       borderRadius: CONFIG.headerBox.radius + "px",
       boxSizing: "border-box",
       color: CONFIG.headerBox.textColor,
       zIndex: "3",
       margin: "0",
+      // fonte padrão do header
+      fontFamily: "'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif",
     });
   }
 
   // =========================
-  // 8) Basic text colors
+  // 8) Texto: cores + Poppins 700 no título
   // =========================
   $$(CONFIG.selectors.excerpt).forEach((el) => {
-    Object.assign(el.style, { color: CONFIG.headerBox.textColor, padding: "0 0 0 1rem", margin: "0" });
+    Object.assign(el.style, {
+      color: CONFIG.headerBox.textColor,
+      padding: "0 0 0 1rem",
+      margin: "0",
+      // se quiser Poppins nos subtítulos tb
+      fontFamily: "'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif",
+      // fontWeight: "500", // opcional
+    });
   });
   $$(CONFIG.selectors.articleHeader).forEach((el) => {
     el.style.color = CONFIG.headerBox.textColor;
     el.style.margin = "0";
   });
 
+  // aplica Poppins 700 no título
+  let titleForce = null;
+
   // =========================
-  // Interactive controls
+  // Interatividade
   // =========================
   if (thumbnail && articleHeader && bgLayer) {
     const titleEl = $(CONFIG.selectors.title, articleHeader);
     const excerptEls = $$(CONFIG.selectors.excerpt, articleHeader);
+
+    // força fonte do título
+    if (titleEl) {
+      titleForce = titleEl;
+      Object.assign(titleEl.style, {
+        fontFamily: "'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif",
+        fontWeight: "700",
+      });
+    }
 
     // Editable
     const editableFocusCSS = `
@@ -479,7 +495,7 @@
       flexDirection: "column",
       alignItems: "stretch",
       gap: "10px",
-      fontFamily: "system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif",
+      fontFamily: "'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif",
       fontSize: "14px",
       padding: "12px",
       background: CONFIG.ui.panelBg,
@@ -503,13 +519,14 @@
         cursor: "pointer",
         fontSize: small ? "14px" : "16px",
         fontWeight: "600",
+        fontFamily: "'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif",
       });
       return b;
     };
 
     const labelText = document.createElement("div");
     labelText.textContent = "Tamanho do texto";
-    labelText.style.fontWeight = "600";
+    labelText.style.fontWeight = "700";
     labelText.style.textAlign = "center";
 
     const btnDec = mkBtn("–", false);
@@ -530,7 +547,7 @@
 
     const labelBg = document.createElement("div");
     labelBg.textContent = "Imagem de fundo";
-    Object.assign(labelBg.style, { fontWeight: "600", textAlign: "center" });
+    Object.assign(labelBg.style, { fontWeight: "700", textAlign: "center" });
 
     const mkGridRow = () => {
       const d = document.createElement("div");
@@ -569,7 +586,7 @@
     };
     const labelAspect = document.createElement("div");
     labelAspect.textContent = "Proporção do card";
-    Object.assign(labelAspect.style, { fontWeight: "600", textAlign: "center" });
+    Object.assign(labelAspect.style, { fontWeight: "700", textAlign: "center" });
 
     const rowAspect = document.createElement("div");
     Object.assign(rowAspect.style, { display: "flex", gap: "8px", justifyContent: "space-between" });
@@ -586,7 +603,7 @@
     Object.assign(sepZ.style, { border: "none", borderTop: "1px solid #2a2a5a", margin: "6px 0" });
     const labelView = document.createElement("div");
     labelView.textContent = "Visualização da página";
-    Object.assign(labelView.style, { fontWeight: "600", textAlign: "center" });
+    Object.assign(labelView.style, { fontWeight: "700", textAlign: "center" });
 
     const btnView63 = mkBtn("63%", true);
     const btnView100 = mkBtn("100%", true);
@@ -688,13 +705,23 @@
           restore();
           return;
         }
-        const run = () => snap(target);
+
+        const run = async () => {
+          // ⏳ aguarda fontes web carregarem para não exportar com fallback
+          if (document.fonts && document.fonts.ready) {
+            try { await document.fonts.ready; } catch {}
+          }
+          snap(target);
+        };
+
         if (!window.html2canvas) {
           const s = document.createElement("script");
           s.src = CONFIG.html2canvasUrl;
           s.onload = run;
           document.body.appendChild(s);
-        } else run();
+        } else {
+          run();
+        }
 
         function snap(node) {
           html2canvas(node, {
@@ -703,7 +730,7 @@
             backgroundColor: null,
             scale: window.devicePixelRatio || 1,
             imageTimeout: 0,
-            proxy: CONFIG.proxy, // << chave para baixar via Worker
+            proxy: CONFIG.proxy, // baixa recursos via Worker quando necessário
           }).then((canvas) => {
             const now = new Date();
             const pad = (n) => String(n).padStart(2, "0");
@@ -722,7 +749,7 @@
         }
       };
 
-      // disable visual zoom, then capture
+      // desabilita zoom visual, captura, e restaura no fim
       resetViewportZoom();
       if (!window.html2canvas) {
         const s = document.createElement("script");
