@@ -39,7 +39,7 @@
       text: " ",
       textColor: "#fff",
       iconSize: 130,
-      iconPadding: "4rem 3rem",
+      iconMargin: "4rem 3rem",
     },
     headerBox: {
       background: "#000",
