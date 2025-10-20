@@ -57,7 +57,7 @@
 
     // >>>>> ADICIONE A URL DO SEU WORKER AQUI <<<<<
     proxy: "https://spring-river-efc5.nlakedeveloper.workers.dev/",
-    // Referer opcional que o Worker envia ao CDN
+    // (opcional) Referer que o Worker enviará ao CDN
     proxyReferer: "https://jc.com.br",
   };
 
@@ -83,7 +83,7 @@
   function proxify(url) {
     try {
       const u = new URL(CONFIG.proxy);
-      u.searchParams.set("url", url);
+      u.searchParams.set("url", new URL(url, location.href).href);
       if (CONFIG.proxyReferer) u.searchParams.set("referer", CONFIG.proxyReferer);
       return u.toString();
     } catch {
@@ -101,22 +101,26 @@
   }
 
   async function tryFetch(url) {
+    const abs = new URL(url, location.href).href;
+
     // 1ª tentativa: direto (se CORS permitir)
     try {
-      const r1 = await fetch(url, { mode: "cors", credentials: "omit" });
+      const r1 = await fetch(abs, { mode: "cors", credentials: "omit" });
       if (r1.ok) return await blobToDataURL(await r1.blob());
     } catch {}
+
     // 2ª tentativa: via proxy
     try {
-      const r2 = await fetch(proxify(url), { mode: "cors", credentials: "omit" });
+      const r2 = await fetch(proxify(abs), { mode: "cors", credentials: "omit" });
       if (r2.ok) return await blobToDataURL(await r2.blob());
     } catch {}
-    throw new Error("CORS block for " + url);
+
+    throw new Error("CORS block for " + abs);
   }
 
   async function fetchAsDataURL(url) {
     // preserva assinatura antiga; agora usa tryFetch por baixo
-    return await tryFetch(new URL(url, location.href).href);
+    return await tryFetch(url);
   }
 
   async function setBgFromUrl(bgDiv, url) {
@@ -263,11 +267,9 @@
     });
     (async () => {
       try {
-        // baixa e converte para data: (direto ou via proxy)
-        brandImg.src = await tryFetch(CONFIG.brand.iconUrl);
+        brandImg.src = await tryFetch(CONFIG.brand.iconUrl); // data:URL
       } catch {
-        // último recurso: carrega via proxy mesmo (pode falhar no save se não virar data:)
-        brandImg.src = proxify(CONFIG.brand.iconUrl);
+        brandImg.src = proxify(CONFIG.brand.iconUrl); // fallback (pode não funcionar no save)
       }
     })();
 
@@ -697,9 +699,9 @@
             backgroundColor: null,
             scale: window.devicePixelRatio || 1,
             imageTimeout: 0,
-            proxy: CONFIG.proxy, // deixa o html2canvas baixar via proxy se precisar
+            proxy: CONFIG.proxy, // << chave para baixar via Worker
           }).then((canvas) => {
-            const now = new Date(); // ✅ corrigido
+            const now = new Date();
             const pad = (n) => String(n).padStart(2, "0");
             const timestamp =
               `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_` +
@@ -714,7 +716,6 @@
             restore();
           });
         }
-
       };
 
       // disable visual zoom, then capture
