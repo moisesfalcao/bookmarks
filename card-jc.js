@@ -36,9 +36,9 @@
     },
     brand: {
       iconUrl: "https://imagens.ne10.uol.com.br/template-unificado/images/jc-new/favicon/ms-icon-144x144.png",
-      text: "jc.com.br",
+      text: " ",
       textColor: "#fff",
-      iconSize: 48,
+      iconSize: 90,
     },
     headerBox: {
       background: "#000",
@@ -232,7 +232,7 @@
       bottom: "0",
       display: "flex",
       flexDirection: "column",
-      alignItems: "flex-start",
+      alignItems: "flex-end",
       gap: "10px",
       width: "100%",
       boxSizing: "border-box",
