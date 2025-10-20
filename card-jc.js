@@ -152,7 +152,7 @@
     });
   }
 
-  document.querySelectorAll(".excerpt p").forEach((el) => {
+  document.querySelectorAll(".article-subtitle").forEach((el) => {
     Object.assign(el.style, { color: "#fff", padding: "0", margin: "0" });
   });
   document.querySelectorAll(".article-header-jc-new").forEach((el) => {
@@ -161,8 +161,8 @@
   });
 
   if (thumbnail && articleHeader && bgLayer) {
-    const titleEl = articleHeader.querySelector(".title");
-    const excerptEls = Array.from(articleHeader.querySelectorAll(".excerpt p"));
+    const titleEl = articleHeader.querySelector(".article-title");
+    const excerptEls = Array.from(articleHeader.querySelectorAll(".article-subtitle"));
 
     // ===== Edição inline =====
     const editableFocusCSS = `
