@@ -46,6 +46,7 @@
       radius: 0,
       padding: "3rem",
       textColor: "#fff",
+      borderBottom: "10px solid #e01e24;",
     },
     ui: {
       pageZoomInitial: 0.63,
@@ -306,6 +307,7 @@
       margin: "0",
       // fonte padrão do header
       fontFamily: "'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif",
+      borderBottom: CONFIG.headerBox.borderBottom,
     });
   }
 
