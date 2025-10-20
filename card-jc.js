@@ -9,6 +9,13 @@
   }
   window.__OBR_CARD_ACTIVE__ = true;
 
+  const st = document.createElement('style');
+st.textContent = `
+  body::before { content: none !important; background: none !important; height: 0 !important; }
+`;
+document.head.appendChild(st);
+
+
   const hide = (selector) =>
     document.querySelectorAll(selector).forEach((el) => (el.style.display = "none"));
   const pxToNumber = (px) => (px ? parseFloat(px) : null);
