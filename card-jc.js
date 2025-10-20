@@ -43,7 +43,7 @@
     headerBox: {
       background: "#000",
       radius: 0,
-      padding: "1rem",
+      padding: "3rem",
       textColor: "#fff",
     },
     ui: {
