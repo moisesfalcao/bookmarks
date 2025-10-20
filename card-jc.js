@@ -301,7 +301,7 @@
       background: CONFIG.headerBox.background,
       width: "100%",
       maxWidth: "none",
-      padding: CONFIG.headerBox.padding,
+      padding: "3rem",
       borderRadius: CONFIG.headerBox.radius + "px",
       boxSizing: "border-box",
       color: CONFIG.headerBox.textColor,
