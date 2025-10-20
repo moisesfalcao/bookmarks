@@ -26,7 +26,7 @@
 
     // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     // COLOQUE AQUI A URL DO SEU PROXY (SEM query string, só a base)
-    proxy: "https://moisesfalcao.github.io/bookmarks/workers.js",
+    proxy: "https://spring-river-efc5.nlakedeveloper.workers.dev/",
     // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     // Opcional: referer "amigável" que o proxy vai enviar para o CDN
     proxyReferer: "https://jc.com.br",
