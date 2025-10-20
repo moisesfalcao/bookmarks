@@ -27,9 +27,10 @@
   hide(".post-content");
   hide("footer");
   hide("#div-gpt-ad-1757003575651-0");
+  hide("#banner-anchor-area");
 
   // Card 1200x1200 + camada de fundo sem distorção
-  document.querySelectorAll(".post-thumbnail").forEach((el) => {
+  document.querySelectorAll(".featured-image").forEach((el) => {
     Object.assign(el.style, {
       margin: "0",
       padding: "0",
@@ -71,9 +72,9 @@
     el.style.margin = "0";
   });
 
-  const thumbnail = document.querySelector(".post-thumbnail");
+  const thumbnail = document.querySelector(".featured-image");
   const bgLayer = thumbnail ? thumbnail.querySelector("#ig-bg-layer") : null;
-  let articleHeader = document.querySelector("header.article-header");
+  let articleHeader = document.querySelector(".article-header-jc-new");
 
   // Stack inferior (marca + header azul)
   let bottomStack = document.getElementById("ig-bottom-stack");
@@ -154,7 +155,7 @@
   document.querySelectorAll(".excerpt p").forEach((el) => {
     Object.assign(el.style, { color: "#fff", padding: "0", margin: "0" });
   });
-  document.querySelectorAll("#single article .article-header .title").forEach((el) => {
+  document.querySelectorAll(".article-header-jc-new").forEach((el) => {
     el.style.color = "#fff";
     el.style.margin = "0";
   });
