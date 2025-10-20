@@ -38,7 +38,8 @@
       iconUrl: "https://imagens.ne10.uol.com.br/template-unificado/images/jc-new/favicon/ms-icon-144x144.png",
       text: " ",
       textColor: "#fff",
-      iconSize: 90,
+      iconSize: 130,
+      iconPadding: "4rem 3rem",
     },
     headerBox: {
       background: "#000",
@@ -266,6 +267,7 @@
       borderRadius: "8px",
       display: "block",
       filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.4))",
+      padding: CONFIG.brand.iconPadding,
     });
     (async () => {
       try {
