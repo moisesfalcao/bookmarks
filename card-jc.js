@@ -16,7 +16,8 @@
       "#header", ".hat", "#barrauol", ".author-signature",
       "#load-unified-ad-1", ".content-news", "figcaption",
       ".latest-news-jc-new", ".post-caption", ".post-content",
-      "footer", "#div-gpt-ad-1757003575651-0", "#banner-anchor-area", ".share-news-jc-new",
+      "footer", "#div-gpt-ad-1757003575651-0", "#banner-anchor-area", 
+      ".share-news-jc-new", ".up-floating", ".GoogleCreativeContainerClass",
     ],
     card: {
       width: 1200,
