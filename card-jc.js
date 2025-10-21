@@ -18,6 +18,7 @@
       ".latest-news-jc-new", ".post-caption", ".post-content",
       "footer", "#div-gpt-ad-1757003575651-0", "#banner-anchor-area", 
       ".share-news-jc-new", ".up-floating", ".GoogleCreativeContainerClass",
+      ".ms-displayad-container",
     ],
     card: {
       width: 1200,
