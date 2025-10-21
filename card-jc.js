@@ -262,7 +262,7 @@
       position: "absolute",
       bottom: "0",
       width: "100%",
-      padding: CONFIG.headerBox.padding,
+      padding:"10rem 5rem 5rem",
       background: CONFIG.headerBox.background,
       color: CONFIG.headerBox.textColor,
       zIndex: "3",
