@@ -5,7 +5,7 @@
   const CONFIG = {
     selectors: {
       cardContainer: ".featured-image",
-      cardImage: ".featured-image img",
+      // cardImage: ".featured-image img", // ignorado: vamos usar SÓ og:image
       articleHeader: ".article-header-jc-new",
       title: ".article-title",
       excerpt: ".article-subtitle",
@@ -13,20 +13,10 @@
       captureTarget: null,
     },
     hide: [
-      "#header",
-      ".hat",
-      "#barrauol",
-      ".author-signature",
-      "#load-unified-ad-1",
-      ".content-news",
-      "figcaption",
-      ".latest-news-jc-new",
-      ".post-caption",
-      ".post-content",
-      "footer",
-      "#div-gpt-ad-1757003575651-0",
-      "#banner-anchor-area",
-      ".share-news-jc-new",
+      "#header", ".hat", "#barrauol", ".author-signature",
+      "#load-unified-ad-1", ".content-news", "figcaption",
+      ".latest-news-jc-new", ".post-caption", ".post-content",
+      "footer", "#div-gpt-ad-1757003575651-0", "#banner-anchor-area", ".share-news-jc-new",
     ],
     card: {
       width: 1200,
@@ -36,35 +26,28 @@
     },
     brand: {
       iconUrl: "https://imagens.ne10.uol.com.br/template-unificado/images/jc-new/favicon/ms-icon-144x144.png",
-      text: " ", // mantenho vazio como você colocou
+      text: " ",
       textColor: "#fff",
       iconSize: 130,
       iconMargin: "4rem 3rem",
     },
     headerBox: {
-      background: "linear-gradient(to bottom,  rgba(0,0,0,0) 0%,rgba(0,0,0,1) 100%)",
+      // gradiente escuro do transparente ao preto
+      background: "linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 100%)",
       radius: 0,
-      padding: "10rem 5rem 5rem 5rem",
+      padding: "3rem",
       textColor: "#fff",
-      borderBottom: "10px solid #e01e24;",
     },
-    ui: {
-      pageZoomInitial: 0.63,
-      panelBg: "#0b0b2a",
-      panelText: "#fff",
-      panelWidth: 260,
-    },
+    ui: { pageZoomInitial: 0.63, panelBg: "#0b0b2a", panelText: "#fff", panelWidth: 260 },
     removeBodyBefore: true,
     html2canvasUrl: "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js",
 
-    // >>>>> WORKER PARA BYPASS DE CORS <<<<<
+    // Worker para contornar CORS
     proxy: "https://spring-river-efc5.nlakedeveloper.workers.dev/",
     proxyReferer: "https://jc.com.br",
   };
 
-  // =========================
-  // Guard against duplicates
-  // =========================
+  // Evita duplicar
   if (window.__OBR_CARD_ACTIVE__) {
     const panel = document.getElementById("ig-font-controls");
     if (panel) panel.style.display = panel.style.display === "none" ? "block" : "none";
@@ -80,7 +63,6 @@
   const hideAll = (selector) => $$(selector).forEach((el) => (el.style.display = "none"));
   const pxToNumber = (px) => (px ? parseFloat(px) : null);
 
-  // --- Proxy helpers ---
   function proxify(url) {
     try {
       const u = new URL(CONFIG.proxy);
@@ -103,12 +85,12 @@
 
   async function tryFetch(url) {
     const abs = new URL(url, location.href).href;
-    // direto
+    // 1) direto
     try {
       const r1 = await fetch(abs, { mode: "cors", credentials: "omit" });
       if (r1.ok) return await blobToDataURL(await r1.blob());
     } catch {}
-    // via proxy
+    // 2) via proxy
     try {
       const r2 = await fetch(proxify(abs), { mode: "cors", credentials: "omit" });
       if (r2.ok) return await blobToDataURL(await r2.blob());
@@ -116,16 +98,12 @@
     throw new Error("CORS block for " + abs);
   }
 
-  async function fetchAsDataURL(url) {
-    return await tryFetch(url);
-  }
-
   async function setBgFromUrl(bgDiv, url) {
     try {
       const dataUrl = await tryFetch(url);
       bgDiv.style.backgroundImage = `url('${dataUrl}')`;
     } catch {
-      // fallback visual (pode não incluir no canvas se CORS bloquear)
+      // fallback visual (pode não entrar no canvas se CORS barrar no runtime)
       bgDiv.style.backgroundImage = `url('${url}')`;
     }
   }
@@ -134,7 +112,13 @@
     const m =
       document.querySelector('meta[property="og:image"], meta[name="og:image"]') ||
       document.querySelector('meta[property="og:image:url"], meta[name="og:image:url"]');
-    return m && (m.content || m.getAttribute("content"));
+    const c = m && (m.content || m.getAttribute("content"));
+    if (!c) return null;
+    try {
+      return new URL(c, location.href).href; // resolve relativo
+    } catch {
+      return c;
+    }
   }
 
   // =========================
@@ -146,14 +130,10 @@
     document.head.appendChild(st);
   }
 
-  // =========================
-  // 1) Hide site chrome
-  // =========================
+  // 1) Esconde elementos do site
   CONFIG.hide.forEach(hideAll);
 
-  // =========================
-  // 2) Base card & background layer
-  // =========================
+  // 2) Card base + camada de fundo
   $$(CONFIG.selectors.cardContainer).forEach((el) => {
     Object.assign(el.style, {
       margin: "0",
@@ -168,7 +148,6 @@
       overflow: "hidden",
     });
 
-    const img = $(CONFIG.selectors.cardImage, el);
     let bgLayer = $("#ig-bg-layer", el);
     if (!bgLayer) {
       bgLayer = document.createElement("div");
@@ -187,20 +166,16 @@
       el.prepend(bgLayer);
     }
 
-    // define imagem de fundo (com fallback og:image)
+    // >>> Usa SOMENTE og:image <<<
     (async () => {
-      let src = img && (img.currentSrc || img.src);
-      if (!src) src = getOgImage();
+      const src = getOgImage();
       if (src) {
         await setBgFromUrl(bgLayer, src);
-        if (img) img.style.display = "none";
       }
     })();
   });
 
-  // =========================
-  // 3) Zero wrapper paddings
-  // =========================
+  // 3) Zera paddings/margens do wrapper
   if (CONFIG.selectors.postWrapper) {
     $$(CONFIG.selectors.postWrapper).forEach((el) => {
       el.style.padding = "0";
@@ -208,16 +183,12 @@
     });
   }
 
-  // =========================
-  // 4) Grab main nodes
-  // =========================
+  // 4) Nós principais
   const thumbnail = $(CONFIG.selectors.cardContainer);
   const bgLayer = thumbnail ? $("#ig-bg-layer", thumbnail) : null;
   let articleHeader = $(CONFIG.selectors.articleHeader);
 
-  // =========================
-  // 5) Bottom stack container
-  // =========================
+  // 5) Container “bottom stack”
   let bottomStack = $("#ig-bottom-stack");
   if (!bottomStack && thumbnail) {
     bottomStack = document.createElement("div");
@@ -240,9 +211,7 @@
     thumbnail.appendChild(bottomStack);
   }
 
-  // =========================
-  // 6) Brand bar (icon + text)
-  // =========================
+  // 6) Brand bar (logo + texto opcional)
   let brandBar = $("#ig-brand-bar");
   if (!brandBar && bottomStack) {
     brandBar = document.createElement("div");
@@ -266,11 +235,8 @@
       margin: CONFIG.brand.iconMargin,
     });
     (async () => {
-      try {
-        brandImg.src = await tryFetch(CONFIG.brand.iconUrl); // data:URL
-      } catch {
-        brandImg.src = proxify(CONFIG.brand.iconUrl); // fallback
-      }
+      try { brandImg.src = await tryFetch(CONFIG.brand.iconUrl); }
+      catch { brandImg.src = proxify(CONFIG.brand.iconUrl); }
     })();
 
     const brandText = document.createElement("span");
@@ -288,65 +254,45 @@
     bottomStack.appendChild(brandBar);
   }
 
-  // =========================
-  // 7) Article header in card (aplica Poppins)
-  // =========================
+  // 7) Header do artigo (gradiente + Poppins)
   if (articleHeader && bottomStack) {
     if (articleHeader.parentElement !== bottomStack) bottomStack.appendChild(articleHeader);
     Object.assign(articleHeader.style, {
-      position: "static",
-      display: "block",
-      background: CONFIG.headerBox.background,
+      position: "absolute",
+      bottom: "0",
       width: "100%",
-      maxWidth: "none",
       padding: CONFIG.headerBox.padding,
-      borderRadius: CONFIG.headerBox.radius + "px",
-      boxSizing: "border-box",
+      background: CONFIG.headerBox.background,
       color: CONFIG.headerBox.textColor,
       zIndex: "3",
-      margin: "0",
-      // fonte padrão do header
       fontFamily: "'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif",
-      borderBottom: CONFIG.headerBox.borderBottom,
     });
   }
 
-  // =========================
-  // 8) Texto: cores + Poppins 700 no título
-  // =========================
+  // 8) Texto: Poppins + cores
   $$(CONFIG.selectors.excerpt).forEach((el) => {
     Object.assign(el.style, {
       color: CONFIG.headerBox.textColor,
       padding: "0 0 0 1rem",
       margin: "0",
-      // se quiser Poppins nos subtítulos tb
       fontFamily: "'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif",
-      // fontWeight: "500", // opcional
     });
   });
-  $$(CONFIG.selectors.articleHeader).forEach((el) => {
-    el.style.color = CONFIG.headerBox.textColor;
-    el.style.margin = "0";
+  $$(CONFIG.selectors.title).forEach((el) => {
+    Object.assign(el.style, {
+      color: CONFIG.headerBox.textColor,
+      margin: "0",
+      fontFamily: "'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif",
+      fontWeight: "700",
+    });
   });
 
-  // aplica Poppins 700 no título
-  let titleForce = null;
-
   // =========================
-  // Interatividade
+  // Interatividades (escala, zoom, export, etc.)
   // =========================
   if (thumbnail && articleHeader && bgLayer) {
     const titleEl = $(CONFIG.selectors.title, articleHeader);
     const excerptEls = $$(CONFIG.selectors.excerpt, articleHeader);
-
-    // força fonte do título
-    if (titleEl) {
-      titleForce = titleEl;
-      Object.assign(titleEl.style, {
-        fontFamily: "'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif",
-        fontWeight: "700",
-      });
-    }
 
     // Editable
     const editableFocusCSS = `
@@ -361,17 +307,8 @@
       styleTag.textContent = editableFocusCSS;
       document.head.appendChild(styleTag);
     }
-    const handlePastePlain = (e) => {
-      e.preventDefault();
-      const text = (e.clipboardData || window.clipboardData).getData("text");
-      document.execCommand("insertText", false, text);
-    };
-    const handleEnterToBr = (e) => {
-      if (e.key === "Enter" && !e.shiftKey) {
-        e.preventDefault();
-        document.execCommand("insertLineBreak");
-      }
-    };
+    const handlePastePlain = (e) => { e.preventDefault(); document.execCommand("insertText", false, (e.clipboardData||window.clipboardData).getData("text")); };
+    const handleEnterToBr = (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); document.execCommand("insertLineBreak"); } };
     const makeEditable = (el) => {
       el.setAttribute("spellcheck", "false");
       el.addEventListener("click", () => {
@@ -380,19 +317,13 @@
           el.dataset.igEditing = "true";
           const sel = window.getSelection();
           const range = document.createRange();
-          range.selectNodeContents(el);
-          range.collapse(false);
-          sel.removeAllRanges();
-          sel.addRange(range);
-          el.focus();
+          range.selectNodeContents(el); range.collapse(false);
+          sel.removeAllRanges(); sel.addRange(range); el.focus();
         }
       });
       el.addEventListener("paste", handlePastePlain);
       el.addEventListener("keydown", handleEnterToBr);
-      el.addEventListener("blur", () => {
-        el.contentEditable = "false";
-        el.dataset.igEditing = "false";
-      });
+      el.addEventListener("blur", () => { el.contentEditable = "false"; el.dataset.igEditing = "false"; });
     };
     if (titleEl) makeEditable(titleEl);
     excerptEls.forEach(makeEditable);
@@ -409,8 +340,7 @@
         const cs = window.getComputedStyle(el);
         const f = pxToNumber(cs.fontSize) || 16;
         const lh = pxToNumber(cs.lineHeight) || f * 1.4;
-        base.excerpt[i].font = f;
-        base.excerpt[i].line = lh;
+        base.excerpt[i].font = f; base.excerpt[i].line = lh;
       });
     };
     captureBase();
@@ -444,7 +374,7 @@
       const yOut = $("#ig-posy-indicator"); if (yOut) yOut.textContent = `${bgPosY}%`;
     };
 
-    // Page zoom (view only)
+    // Zoom da página (visual)
     const Z_TARGET = CONFIG.ui.pageZoomInitial;
     function ensureWrapExists() {
       let wrap = $("#ig-scale-wrapper");
@@ -461,32 +391,21 @@
       document.documentElement.style.zoom = r;
       if ("zoom" in document.documentElement.style) {
         const w = $("#ig-scale-wrapper");
-        if (w) {
-          w.style.transform = "none";
-          w.style.width = "auto";
-        }
+        if (w) { w.style.transform = "none"; w.style.width = "auto"; }
         return;
       }
       const wrap = ensureWrapExists();
-      if (wrap) {
-        wrap.style.transform = `scale(${r})`;
-        wrap.style.width = 100 / r + "%";
-      }
+      if (wrap) { wrap.style.transform = `scale(${r})`; wrap.style.width = 100 / r + "%"; }
     }
     function resetViewportZoom() {
       document.documentElement.style.zoom = "";
       const w = $("#ig-scale-wrapper");
-      if (w) {
-        w.style.transform = "none";
-        w.style.width = "auto";
-      }
+      if (w) { w.style.transform = "none"; w.style.width = "auto"; }
     }
     applyViewportZoom(Z_TARGET);
 
-    // Panel (UI)
-    const old = $("#ig-font-controls");
-    if (old && old.parentElement) old.parentElement.removeChild(old);
-
+    // Painel (UI)
+    const old = $("#ig-font-controls"); if (old && old.parentElement) old.parentElement.removeChild(old);
     const panel = document.createElement("div");
     panel.id = "ig-font-controls";
     Object.assign(panel.style, {
@@ -557,23 +476,27 @@
       return d;
     };
 
+    // ✅ criadas UMA ÚNICA VEZ
     const zoomRow = mkGridRow();
     const zoomInput = document.createElement("input");
     zoomInput.type = "range"; zoomInput.min = "0.5"; zoomInput.max = "2.0"; zoomInput.step = "0.01"; zoomInput.value = "1";
     const zoomIndicator = document.createElement("span");
     zoomIndicator.id = "ig-zoom-indicator"; zoomIndicator.textContent = "100%";
+    zoomRow.append(zoomInput, zoomIndicator);
 
     const posXRow = mkGridRow();
     const posXInput = document.createElement("input");
     posXInput.type = "range"; posXInput.min = "0"; posXInput.max = "100"; posXInput.step = "1"; posXInput.value = "50";
     const posXIndicator = document.createElement("span");
     posXIndicator.id = "ig-posx-indicator"; posXIndicator.textContent = "50%";
+    posXRow.append(posXInput, posXIndicator);
 
     const posYRow = mkGridRow();
     const posYInput = document.createElement("input");
     posYInput.type = "range"; posYInput.min = "0"; posYInput.max = "100"; posYInput.step = "1"; posYInput.value = "50";
     const posYIndicator = document.createElement("span");
     posYIndicator.id = "ig-posy-indicator"; posYIndicator.textContent = "50%";
+    posYRow.append(posYInput, posYIndicator);
 
     const btnResetBg = mkBtn("Reset fundo", true);
 
@@ -612,9 +535,9 @@
 
     const sep2 = document.createElement("hr");
     Object.assign(sep2.style, { border: "none", borderTop: "1px solid #2a2a5a", margin: "6px 0" });
-    const btnSave = mkBtn("💾 Salvar imagem", true);
+    const btnSave = mkBtn("💾 Salvar imagem (PNG)", true);
 
-    // Events
+    // Eventos
     btnDec.addEventListener("click", () => { scale = Math.max(minScale, Math.round((scale - step) * 100) / 100); applyScale(); });
     btnInc.addEventListener("click", () => { scale = Math.min(maxScale, Math.round((scale + step) * 100) / 100); applyScale(); });
     btnResetAll.addEventListener("click", () => {
@@ -638,14 +561,22 @@
     posXInput.addEventListener("input", () => { bgPosX = parseInt(posXInput.value || "50", 10); applyBackgroundTransform(); });
     posYInput.addEventListener("input", () => { bgPosY = parseInt(posYInput.value || "50", 10); applyBackgroundTransform(); });
     btnResetBg.addEventListener("click", () => {
-      bgZoom = 1.0; bgPosX = 50; bgPosY = 50;
-      zoomInput.value = "1"; posXInput.value = "50"; posYInput.value = "50";
+      bgZoom = 1.0; bgPosX = 50; bgPosY = 50; zoomInput.value = "1"; posXInput.value = "50"; posYInput.value = "50";
       applyBackgroundTransform();
     });
 
+    // 🔁 Ocultar resumo => apenas substitui texto por "jc.com.br"
     btnToggleExcerpt.addEventListener("click", () => {
+      const willReplace = !excerptsHidden; // estado que vamos aplicar
+      excerptEls.forEach((el) => {
+        if (willReplace) {
+          if (!el.dataset.igOriginal) el.dataset.igOriginal = el.innerHTML;
+          el.innerHTML = "jc.com.br";
+        } else {
+          if (el.dataset.igOriginal != null) el.innerHTML = el.dataset.igOriginal;
+        }
+      });
       excerptsHidden = !excerptsHidden;
-      excerptEls.forEach((el) => (el.style.display = excerptsHidden ? "none" : "block"));
       btnToggleExcerpt.textContent = excerptsHidden ? "🪄 Mostrar resumo" : "🪄 Ocultar resumo";
     });
 
@@ -654,23 +585,20 @@
     btnView63.addEventListener("click", () => applyViewportZoom(CONFIG.ui.pageZoomInitial));
     btnView100.addEventListener("click", () => resetViewportZoom());
 
-    // Assemble panel
+    // Monta painel (sem duplicar variáveis)
     const zoomWrap = document.createElement("div");
     Object.assign(zoomWrap.style, { display: "flex", flexDirection: "column", gap: "4px" });
     const zoomLabel = document.createElement("div"); zoomLabel.textContent = "Zoom"; zoomLabel.style.marginBottom = "4px";
-    zoomRow.append(zoomInput, zoomIndicator);
     zoomWrap.append(zoomLabel, zoomRow);
 
     const posXWrap = document.createElement("div");
     Object.assign(posXWrap.style, { display: "flex", flexDirection: "column", gap: "4px" });
     const posXLabel = document.createElement("div"); posXLabel.textContent = "Offset X"; posXLabel.style.marginBottom = "4px";
-    posXRow.append(posXInput, posXIndicator);
     posXWrap.append(posXLabel, posXRow);
 
     const posYWrap = document.createElement("div");
     Object.assign(posYWrap.style, { display: "flex", flexDirection: "column", gap: "4px" });
     const posYLabel = document.createElement("div"); posYLabel.textContent = "Offset Y"; posYLabel.style.marginBottom = "4px";
-    posYRow.append(posYInput, posYIndicator);
     posYWrap.append(posYLabel, posYRow);
 
     const sepAspect = document.createElement("hr");
@@ -689,12 +617,12 @@
     panel.append(zoomBtnsRow, sep2, btnSave);
     document.body.appendChild(panel);
 
-    // Initial state
+    // Estados iniciais
     applyScale();
     applyBackgroundTransform();
     setAspect("1:1");
 
-    // Save
+    // ===== Salvar (PNG sem transparência, alta nitidez) =====
     btnSave.addEventListener("click", () => {
       [titleEl, ...excerptEls].forEach((el) => el && el.blur());
       const restore = () => applyViewportZoom(Z_TARGET);
@@ -702,17 +630,11 @@
       const doCapture = () => {
         const targetSel = CONFIG.selectors.captureTarget || CONFIG.selectors.cardContainer;
         const target = $(targetSel);
-        if (!target) {
-          alert(`Elemento ${targetSel} não encontrado.`);
-          restore();
-          return;
-        }
+        if (!target) { alert(`Elemento ${targetSel} não encontrado.`); restore(); return; }
 
         const run = async () => {
-          // ⏳ aguarda fontes web carregarem para não exportar com fallback
-          if (document.fonts && document.fonts.ready) {
-            try { await document.fonts.ready; } catch {}
-          }
+          // garante fontes carregadas (Poppins 700)
+          if (document.fonts && document.fonts.ready) { try { await document.fonts.ready; } catch {} }
           snap(target);
         };
 
@@ -721,18 +643,18 @@
           s.src = CONFIG.html2canvasUrl;
           s.onload = run;
           document.body.appendChild(s);
-        } else {
-          run();
-        }
+        } else { run(); }
 
         function snap(node) {
           html2canvas(node, {
             useCORS: true,
             allowTaint: false,
-            backgroundColor: null,
-            scale: window.devicePixelRatio || 1,
+            // PNG sem transparência => fundo sólido
+            backgroundColor: CONFIG.card.backgroundColor || "#000000",
+            // mais nítido
+            scale: 2,
             imageTimeout: 0,
-            proxy: CONFIG.proxy, // baixa recursos via Worker quando necessário
+            proxy: CONFIG.proxy,
           }).then((canvas) => {
             const now = new Date();
             const pad = (n) => String(n).padStart(2, "0");
@@ -741,17 +663,18 @@
               `${pad(now.getHours())}-${pad(now.getMinutes())}`;
             const pageTitle = document.title.replace(/[\\\/:*?"<>|]/g, "").trim();
             const host = location.host.replace(/[\\\/:*?"<>|]/g, "").trim();
-            const fileName = (pageTitle || host || "post-thumbnail") + "_" + timestamp + ".jpg";
+            const fileName = (pageTitle || host || "post-thumbnail") + "_" + timestamp + ".png";
+
             const link = document.createElement("a");
             link.download = fileName;
-            link.href = canvas.toDataURL("image/jpeg", 0.95);
+            link.href = canvas.toDataURL("image/png"); // PNG
             link.click();
             restore();
           });
         }
       };
 
-      // desabilita zoom visual, captura, e restaura no fim
+      // desliga zoom visual, captura, restaura
       resetViewportZoom();
       if (!window.html2canvas) {
         const s = document.createElement("script");
