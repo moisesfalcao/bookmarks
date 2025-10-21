@@ -622,7 +622,7 @@
     // Estados iniciais
     applyScale();
     applyBackgroundTransform();
-    setAspect("1:1");
+    setAspect("4:5");
 
     // ===== Salvar (PNG sem transparência, alta nitidez) =====
     btnSave.addEventListener("click", () => {
