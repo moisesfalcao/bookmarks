@@ -178,8 +178,8 @@
     // Aplicadores
     const txtScaleOut = document.getElementById("ig-txt-scale");
     function applyScale() {
-      const baseTitle = 32, baseLineTitle = 40;
-      const baseExcerpt = 18, baseLineExcerpt = 26;
+      const baseTitle = 53, baseLineTitle = 64;
+      const baseExcerpt = 30, baseLineExcerpt = 43;
       hTitle.style.fontSize = (baseTitle * scale) + "px";
       hTitle.style.lineHeight = (baseLineTitle * scale) + "px";
       pExcerpt.style.fontSize = (baseExcerpt * scale) + "px";
