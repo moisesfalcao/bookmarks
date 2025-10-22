@@ -72,6 +72,8 @@
     display: "flex", alignItems: "center", justifyContent: "center", padding: "24px",
   });
   document.body.appendChild(overlay);
+  document.documentElement.style.zoom = "0.5";
+
 
   // CSS externo (obrigatório)
   if (!CONFIG.CSS_URL) { alert("Defina CONFIG.CSS_URL com a URL do CSS externo."); return; }
