@@ -21,7 +21,7 @@
       textColor: "#fff",
       padding: "10rem 5rem 5rem",
     },
-    ui: { panelBg: "#0b0b2a", panelText: "#fff", panelWidth: 260 },
+    ui: { panelBg: "#0b0b2a", panelText: "#fff", panelWidth: 350 },
     html2canvasUrl: "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js",
     proxy: "https://spring-river-efc5.nlakedeveloper.workers.dev/",
     proxyReferer: "https://jc.com.br",
@@ -204,7 +204,7 @@
     <hr>
     <div style="text-align:center;font-weight:700">Imagem (principal)</div>
     <div class="row"><div class="grid2">
-      <input id="ig-fg-zoom" type="range" min="0.5" max="2.0" step="0.01" value="1">
+      <input id="ig-fg-zoom" type="range" min="0.5" max="3.0" step="0.01" value="1">
       <span id="ig-fg-zoom-out">100%</span>
     </div></div>
     <div class="row"><div class="grid2">
