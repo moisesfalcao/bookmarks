@@ -1,9 +1,6 @@
 (function () {
   const CONFIG = {
-    selectors: {
-      title: ".article-title",
-      excerpt: ".article-subtitle",
-    },
+    selectors: { title: ".article-title", excerpt: ".article-subtitle" },
     card: {
       width: 1200,
       heightByAspect: { "1:1": 1200, "4:5": 1500 },
@@ -28,8 +25,8 @@
     html2canvasUrl: "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js",
     proxy: "https://spring-river-efc5.nlakedeveloper.workers.dev/",
     proxyReferer: "https://jc.com.br",
-    // 💡 INSIRA AQUI A URL DO SEU CSS (use o conteúdo do bloco "CSS externo")
-    CSS_URL: "https://moisesfalcao.github.io/bookmarks/jc-card-modelo1.css"
+    // 🔗 AQUI: coloque a URL do seu CSS externo
+    CSS_URL: "https://SEU-DOMINIO.com/caminho/ig-card.css"
   };
 
   if (window.__OBR_CARD_ACTIVE__) {
@@ -39,7 +36,7 @@
   }
   window.__OBR_CARD_ACTIVE__ = true;
 
-  // ===== Helpers =====
+  // Helpers
   const $ = (sel, root = document) => root.querySelector(sel);
   const proxify = (url) => {
     try {
@@ -49,13 +46,11 @@
       return u.toString();
     } catch { return url; }
   };
-  const blobToDataURL = (blob) => new Promise((resolve, reject) => {
-    const r = new FileReader(); r.onload = () => resolve(r.result); r.onerror = reject; r.readAsDataURL(blob);
-  });
+  const blobToDataURL = (b) => new Promise((res, rej) => { const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=rej; r.readAsDataURL(b); });
   async function tryFetch(url) {
     const abs = new URL(url, location.href).href;
-    try { const r1 = await fetch(abs, { mode: "cors", credentials: "omit" }); if (r1.ok) return blobToDataURL(await r1.blob()); } catch {}
-    try { const r2 = await fetch(proxify(abs), { mode: "cors", credentials: "omit" }); if (r2.ok) return blobToDataURL(await r2.blob()); } catch {}
+    try { const r1 = await fetch(abs, {mode:"cors",credentials:"omit"}); if (r1.ok) return blobToDataURL(await r1.blob()); } catch {}
+    try { const r2 = await fetch(proxify(abs), {mode:"cors",credentials:"omit"}); if (r2.ok) return blobToDataURL(await r2.blob()); } catch {}
     throw new Error("CORS block for " + abs);
   }
   function getOgImage() {
@@ -64,12 +59,12 @@
     try { return new URL(c, location.href).href; } catch { return c; }
   }
 
-  // ===== Dados via seletores =====
+  // Dados via seletores
   const pageTitleText = ($(CONFIG.selectors.title)?.textContent || document.title || "").trim();
   const pageExcerptText = ($(CONFIG.selectors.excerpt)?.textContent || "").trim();
   const ogImageUrl = getOgImage();
 
-  // ===== Overlay raiz (DIV fixa) =====
+  // Overlay raiz
   const overlay = document.createElement("div");
   overlay.id = "ig-card-overlay";
   Object.assign(overlay.style, {
@@ -78,15 +73,9 @@
   });
   document.body.appendChild(overlay);
 
-  // ===== Carregar CSS externo (obrigatório) =====
-  if (!CONFIG.CSS_URL) {
-    alert("Defina CONFIG.CSS_URL com a URL do CSS externo (veja o bloco 'CSS externo').");
-    return;
-  }
-  const linkCss = document.createElement("link");
-  linkCss.rel = "stylesheet";
-  linkCss.href = CONFIG.CSS_URL;
-  overlay.appendChild(linkCss);
+  // CSS externo (obrigatório)
+  if (!CONFIG.CSS_URL) { alert("Defina CONFIG.CSS_URL com a URL do CSS externo."); return; }
+  const linkCss = document.createElement("link"); linkCss.rel = "stylesheet"; linkCss.href = CONFIG.CSS_URL; overlay.appendChild(linkCss);
 
   // Fonte Poppins
   const linkFont = document.createElement("link");
@@ -94,7 +83,7 @@
   linkFont.href = "https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap";
   overlay.appendChild(linkFont);
 
-  // Estrutura
+  // Estrutura DOM
   const wrap = document.createElement("div"); wrap.className = "ig-wrap";
   const card = document.createElement("div"); card.id = "ig-card";
   const bgBlur = document.createElement("div"); bgBlur.id = "ig-bg-blur";
@@ -155,20 +144,17 @@
   `;
   const btnClose = document.createElement("button");
   btnClose.id = "ig-close"; btnClose.textContent = "Fechar";
-  btnClose.onclick = () => { overlay.remove(); document.documentElement.style.zoom = ""; };
+  btnClose.onclick = () => { overlay.remove(); };
 
   overlay.append(wrap, panel, btnClose);
 
-  // ===== Lógica =====
+  // Lógica
   (async function init() {
-    // 🔎 Zoom inicial 50% para visualizar melhor o card
-    document.documentElement.style.zoom = "0.5";
-
     // Brand icon
     try { brandImg.src = await tryFetch(CONFIG.brand.iconUrl); }
     catch { brandImg.src = proxify(CONFIG.brand.iconUrl); }
 
-    // Imagem: fundo blur (cover) + frente contain
+    // Fundo blur + imagem principal
     const ogUrl = getOgImage();
     if (ogUrl) {
       try {
@@ -224,29 +210,27 @@
       applyScale(); applyFgTransform();
       if (excerptsHidden) document.getElementById("ig-btn-toggle-excerpt").click();
       setAspect(CONFIG.card.defaultAspect);
-      document.documentElement.style.zoom = "0.5"; // mantém o 50% ao reset
     };
     document.getElementById("ig-fg-zoom").oninput = (e) => { fgZoom = parseFloat(e.target.value || "1"); applyFgTransform(); };
     document.getElementById("ig-fg-posx").oninput = (e) => { fgOffsetX = parseInt(e.target.value || "0", 10); applyFgTransform(); };
     document.getElementById("ig-fg-posy").oninput = (e) => { fgOffsetY = parseInt(e.target.value || "0", 10); applyFgTransform(); };
+
+    // 🪄 Ocultar resumo => "jc.com.br"
     document.getElementById("ig-btn-toggle-excerpt").onclick = () => {
       const willReplace = !excerptsHidden;
-      if (willReplace) {
-        if (!pExcerpt.dataset.igOriginal) pExcerpt.dataset.igOriginal = pExcerpt.innerHTML;
-        pExcerpt.innerHTML = "jc.com.br";
-      } else {
-        if (pExcerpt.dataset.igOriginal != null) pExcerpt.innerHTML = pExcerpt.dataset.igOriginal;
-      }
+      if (willReplace) { if (!pExcerpt.dataset.igOriginal) pExcerpt.dataset.igOriginal = pExcerpt.innerHTML; pExcerpt.innerHTML = "jc.com.br"; }
+      else { if (pExcerpt.dataset.igOriginal != null) pExcerpt.innerHTML = pExcerpt.dataset.igOriginal; }
       excerptsHidden = !excerptsHidden;
       document.getElementById("ig-btn-toggle-excerpt").textContent = excerptsHidden ? "🪄 Mostrar resumo" : "🪄 Ocultar resumo";
     };
+
     document.getElementById("ig-btn-11").onclick = () => setAspect("1:1");
     document.getElementById("ig-btn-45").onclick = () => setAspect("4:5");
 
     // Estados iniciais
     applyScale(); applyFgTransform(); setAspect(CONFIG.card.defaultAspect);
 
-    // Salvar PNG
+    // ===== Salvar PNG (força zoom 100% durante captura e restaura) =====
     function ensureHtml2Canvas(cb) {
       if (window.html2canvas) return cb();
       const s = document.createElement("script"); s.src = CONFIG.html2canvasUrl; s.onload = cb; document.body.appendChild(s);
@@ -254,14 +238,19 @@
     document.getElementById("ig-btn-save").onclick = () => {
       ensureHtml2Canvas(() => {
         (document.fonts?.ready || Promise.resolve()).finally(() => {
+          const prevZoom = document.documentElement.style.zoom;     // guarda o zoom atual (provavelmente vazio)
+          document.documentElement.style.zoom = "";                 // força “sem zoom” (equivalente a 100%)
           window.html2canvas(card, {
-            useCORS: true, allowTaint: false, backgroundColor: CONFIG.card.backgroundColor, scale: 2, imageTimeout: 0, proxy: CONFIG.proxy
+            useCORS: true, allowTaint: false,
+            backgroundColor: CONFIG.card.backgroundColor,
+            scale: 2, imageTimeout: 0, proxy: CONFIG.proxy
           }).then((canvas) => {
-            const now = new Date(); const pad = (n) => String(n).padStart(2, "0");
-            const timestamp = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}`;
+            const now = new Date(); const pad = (n) => String(n).padStart(2,"0");
+            const ts = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}`;
             const safeTitle = (document.title || "post-thumbnail").replace(/[\\\/:*?"<>|]/g, "").trim();
-            const a = document.createElement("a"); a.download = `${safeTitle}_${timestamp}.png`;
+            const a = document.createElement("a"); a.download = `${safeTitle}_${ts}.png`;
             a.href = canvas.toDataURL("image/png"); a.click();
+            document.documentElement.style.zoom = prevZoom;         // restaura zoom da página (se houver)
           });
         });
       });
