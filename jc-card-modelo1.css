@@ -20,8 +20,6 @@ html,body{margin:0;padding:0;background:#0b0b2a;color:#fff;font-family:'Poppins'
 /* Fundo blur (cover) */
 #ig-bg-blur{
   position:absolute; inset:0;
-  background-repeat:no-repeat; background-size:cover; background-position:50% 50%;
-  filter: blur(28px) brightness(0.85);
   transform: scale(1.06);   /* esconde bordas após o blur */
   z-index:1;
 }
