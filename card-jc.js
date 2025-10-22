@@ -299,7 +299,7 @@
 
     // estados
     let scale = 1.0;
-    const step = 0.05, minScale = 0.7, maxScale = 1.6;
+    const step = 0.05, minScale = 0.7, maxScale = 2.6;
     let fgZoom = 1.0, fgOffsetX = 0, fgOffsetY = 0;
     let excerptsHidden = false;
     let currentAspect = CONFIG.card.defaultAspect;
