@@ -12,7 +12,7 @@ html,body{margin:0;padding:0;background:#0b0b2a;color:#fff;font-family:'Poppins'
 #ig-card{
   position:relative;
   width:1200px;             /* largura fixa do card */
-  height:1500px;            /* 4:5 padrão (ajustado via JS para 1:1 ou 4:5) */
+  height:1500px;            /* 4:5 padrão (JS alterna para 1:1 se desejar) */
   background:#000;
   overflow:hidden;
 }
@@ -22,11 +22,11 @@ html,body{margin:0;padding:0;background:#0b0b2a;color:#fff;font-family:'Poppins'
   position:absolute; inset:0;
   background-repeat:no-repeat; background-size:cover; background-position:50% 50%;
   filter: blur(28px) brightness(0.85);
-  transform: scale(1.06);     /* elimina bordas após blur */
+  transform: scale(1.06);   /* esconde bordas após o blur */
   z-index:1;
 }
 
-/* Imagem principal (contain) dentro de overflow hidden */
+/* Imagem principal (contain), dentro de overflow hidden */
 #ig-fg-wrap{
   position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
   overflow:hidden; z-index:2;
@@ -63,8 +63,8 @@ html,body{margin:0;padding:0;background:#0b0b2a;color:#fff;font-family:'Poppins'
 /* ✅ Resumo com borda vermelha à esquerda */
 #ig-header .excerpt{
   margin:0; color:#fff;
-  border-left:6px solid #ff0033;  /* borda vermelha */
-  padding-left:1rem;              /* respiro do texto */
+  border-left:6px solid #ff0033;
+  padding-left:1rem;
 }
 
 /* Painel (UI) */
