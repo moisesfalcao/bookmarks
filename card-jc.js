@@ -59,6 +59,63 @@
     try { return new URL(c, location.href).href; } catch { return c; }
   }
 
+
+
+async function loadImg(src) {
+  return new Promise((resolve, reject) => {
+    const im = new Image();
+    im.crossOrigin = 'anonymous';
+    im.onload = () => resolve(im);
+    im.onerror = reject;
+    im.src = src;
+  });
+}
+
+/**
+ * Gera um dataURL com a imagem já borrada e com brilho ajustado.
+ * - targetW/H: dimensões do card (ex.: 1200x1500)
+ * - usa "cover" para preencher sem distorcer
+ */
+async function makeBlurBgDataURL(src, targetW, targetH, { blurPx = 28, brightness = 0.85, extraScale = 1.06 } = {}) {
+  const img = await loadImg(src);
+
+  // canvas alvo
+  const cw = targetW;
+  const ch = targetH;
+  const canvas = document.createElement('canvas');
+  canvas.width = cw;
+  canvas.height = ch;
+  const ctx = canvas.getContext('2d');
+
+  // calcula "cover" para manter proporção sem distorcer
+  const ir = img.width / img.height;
+  const cr = cw / ch;
+  let dw, dh;
+  if (ir > cr) { // imagem mais "larga" => ajusta por altura
+    dh = ch * extraScale;
+    dw = dh * ir;
+  } else {       // imagem mais "alta" => ajusta por largura
+    dw = cw * extraScale;
+    dh = dw / ir;
+  }
+  const dx = (cw - dw) / 2;
+  const dy = (ch - dh) / 2;
+
+  // aplica filtros (mesma sintaxe do CSS filter)
+  // ex.: blur(28px) brightness(85%)
+  const brightnessPct = Math.round(brightness * 100);
+  ctx.filter = `blur(${blurPx}px) brightness(${brightnessPct}%)`;
+
+  // desenha a imagem "cover" já com blur + brightness
+  ctx.drawImage(img, dx, dy, dw, dh);
+
+  // exporta
+  return canvas.toDataURL('image/png');
+}
+
+
+  
+
   // Dados via seletores
   const pageTitleText = ($(CONFIG.selectors.title)?.textContent || document.title || "").trim();
   const pageExcerptText = ($(CONFIG.selectors.excerpt)?.textContent || "").trim();
@@ -202,6 +259,16 @@
     function setAspect(aspect) {
       currentAspect = aspect;
       card.style.height = (CONFIG.card.heightByAspect[aspect]) + "px";
+
+      if (fgImg.src) {
+        makeBlurBgDataURL(fgImg.src, CONFIG.card.width, CONFIG.card.heightByAspect[aspect], {
+          blurPx: CONFIG.card.bgBlurPx,
+          brightness: CONFIG.card.bgDim,
+          extraScale: 1.06
+        }).then((durl) => { bgBlur.style.backgroundImage = `url('${durl}')`; });
+      }
+
+      
       document.getElementById("ig-btn-11").style.opacity = aspect === "1:1" ? "1" : "0.8";
       document.getElementById("ig-btn-45").style.opacity = aspect === "4:5" ? "1" : "0.8";
     }
