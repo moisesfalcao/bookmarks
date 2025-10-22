@@ -26,7 +26,7 @@
     proxy: "https://spring-river-efc5.nlakedeveloper.workers.dev/",
     proxyReferer: "https://jc.com.br",
     // 🔗 AQUI: coloque a URL do seu CSS externo
-    CSS_URL: "https://SEU-DOMINIO.com/caminho/ig-card.css"
+    CSS_URL: "https://moisesfalcao.github.io/bookmarks/jc-card-modelo1.css"
   };
 
   if (window.__OBR_CARD_ACTIVE__) {
