@@ -161,7 +161,12 @@
     if (ogUrl) {
       try {
         const dataUrl = await tryFetch(ogUrl);
-        bgBlur.style.backgroundImage = `url('${dataUrl}')`;
+        const processed = await makeBlurBgDataURL(dataUrl, CONFIG.card.width, CONFIG.card.heightByAspect[currentAspect], {
+          blurPx: CONFIG.card.bgBlurPx,
+          brightness: CONFIG.card.bgDim, // 0.85 => 85%
+          extraScale: 1.06               // substitui o antigo transform: scale(1.06)
+        });
+        bgBlur.style.backgroundImage = `url('${processed}')`;
         fgImg.src = dataUrl;
       } catch {
         bgBlur.style.backgroundImage = `url('${ogUrl}')`;
