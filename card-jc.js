@@ -5,8 +5,8 @@
       width: 1200,
       heightByAspect: { "1:1": 1200, "4:5": 1500 },
       defaultAspect: "4:5",
-      bgBlurPx: 28,
-      bgDim: 0.85,
+      bgBlurPx: 28,       // intensidade do blur no fundo
+      bgDim: 0.85,        // brilho (0.0–1.0)
       backgroundColor: "#000000",
     },
     brand: {
@@ -25,7 +25,6 @@
     html2canvasUrl: "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js",
     proxy: "https://spring-river-efc5.nlakedeveloper.workers.dev/",
     proxyReferer: "https://jc.com.br",
-    // 🔗 AQUI: coloque a URL do seu CSS externo
     CSS_URL: "https://moisesfalcao.github.io/bookmarks/jc-card-modelo1.css"
   };
 
@@ -36,8 +35,9 @@
   }
   window.__OBR_CARD_ACTIVE__ = true;
 
-  // Helpers
+  // =========== Helpers ===========
   const $ = (sel, root = document) => root.querySelector(sel);
+
   const proxify = (url) => {
     try {
       const u = new URL(CONFIG.proxy);
@@ -46,82 +46,85 @@
       return u.toString();
     } catch { return url; }
   };
-  const blobToDataURL = (b) => new Promise((res, rej) => { const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=rej; r.readAsDataURL(b); });
-  async function tryFetch(url) {
+
+  const blobToDataURL = (b) => new Promise((res, rej) => {
+    const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(b);
+  });
+
+  // Puxa a imagem e devolve SEMPRE um dataURL (evita taint/CORS e telas pretas)
+  async function fetchAsDataURL(url) {
     const abs = new URL(url, location.href).href;
-    try { const r1 = await fetch(abs, {mode:"cors",credentials:"omit"}); if (r1.ok) return blobToDataURL(await r1.blob()); } catch {}
-    try { const r2 = await fetch(proxify(abs), {mode:"cors",credentials:"omit"}); if (r2.ok) return blobToDataURL(await r2.blob()); } catch {}
-    throw new Error("CORS block for " + abs);
+    try {
+      const r1 = await fetch(abs, { mode: "cors", credentials: "omit" });
+      if (r1.ok) return blobToDataURL(await r1.blob());
+    } catch {}
+    try {
+      const r2 = await fetch(proxify(abs), { mode: "cors", credentials: "omit" });
+      if (r2.ok) return blobToDataURL(await r2.blob());
+    } catch {}
+    // último recurso: tenta sem CORS — pode falhar; ainda assim mantém dataURL inválido fora (evita travar)
+    const r3 = await fetch(abs).catch(() => null);
+    if (r3 && r3.ok) return blobToDataURL(await r3.blob());
+    throw new Error("Não foi possível carregar a imagem (CORS).");
   }
+
   function getOgImage() {
     const m = document.querySelector('meta[property="og:image"], meta[name="og:image"], meta[property="og:image:url"], meta[name="og:image:url"]');
     const c = m && (m.content || m.getAttribute("content")); if (!c) return null;
     try { return new URL(c, location.href).href; } catch { return c; }
   }
 
-
-
-async function loadImg(src) {
-  return new Promise((resolve, reject) => {
-    const im = new Image();
-    im.crossOrigin = 'anonymous';
-    im.onload = () => resolve(im);
-    im.onerror = reject;
-    im.src = src;
-  });
-}
-
-/**
- * Gera um dataURL com a imagem já borrada e com brilho ajustado.
- * - targetW/H: dimensões do card (ex.: 1200x1500)
- * - usa "cover" para preencher sem distorcer
- */
-async function makeBlurBgDataURL(src, targetW, targetH, { blurPx = 28, brightness = 0.85, extraScale = 1.06 } = {}) {
-  const img = await loadImg(src);
-
-  // canvas alvo
-  const cw = targetW;
-  const ch = targetH;
-  const canvas = document.createElement('canvas');
-  canvas.width = cw;
-  canvas.height = ch;
-  const ctx = canvas.getContext('2d');
-
-  // calcula "cover" para manter proporção sem distorcer
-  const ir = img.width / img.height;
-  const cr = cw / ch;
-  let dw, dh;
-  if (ir > cr) { // imagem mais "larga" => ajusta por altura
-    dh = ch * extraScale;
-    dw = dh * ir;
-  } else {       // imagem mais "alta" => ajusta por largura
-    dw = cw * extraScale;
-    dh = dw / ir;
+  function loadImg(src) {
+    return new Promise((resolve, reject) => {
+      const im = new Image();
+      im.onload = () => resolve(im);
+      im.onerror = reject;
+      // usar dataURL evita CORS; quando for URL http(s), ainda setamos crossOrigin por segurança
+      if (!/^data:/.test(src)) im.crossOrigin = "anonymous";
+      im.src = src;
+    });
   }
-  const dx = (cw - dw) / 2;
-  const dy = (ch - dh) / 2;
 
-  // aplica filtros (mesma sintaxe do CSS filter)
-  // ex.: blur(28px) brightness(85%)
-  const brightnessPct = Math.round(brightness * 100);
-  ctx.filter = `blur(${blurPx}px) brightness(${brightnessPct}%)`;
+  /**
+   * Gera um dataURL de fundo já com blur + dim, usando "cover".
+   * Tudo em canvas offscreen (sem poluir DOM), então html2canvas captura 1:1.
+   */
+  async function makeBlurBgDataURL(srcDataURL, targetW, targetH, { blurPx = 28, brightness = 0.85, extraScale = 1.06 } = {}) {
+    const img = await loadImg(srcDataURL);
 
-  // desenha a imagem "cover" já com blur + brightness
-  ctx.drawImage(img, dx, dy, dw, dh);
+    const canvas = document.createElement("canvas");
+    canvas.width = targetW;
+    canvas.height = targetH;
+    const ctx = canvas.getContext("2d");
 
-  // exporta
-  return canvas.toDataURL('image/png');
-}
+    // calcula cover
+    const ir = img.width / img.height;
+    const cr = targetW / targetH;
+    let dw, dh;
+    if (ir > cr) { // mais larga
+      dh = targetH * extraScale;
+      dw = dh * ir;
+    } else {       // mais alta
+      dw = targetW * extraScale;
+      dh = dw / ir;
+    }
+    const dx = (targetW - dw) / 2;
+    const dy = (targetH - dh) / 2;
 
+    // aplica blur + brilho (canvas 2D API — html2canvas respeita porque já vira bitmap)
+    const brightnessPct = Math.round(brightness * 100);
+    ctx.filter = `blur(${blurPx}px) brightness(${brightnessPct}%)`;
+    ctx.drawImage(img, dx, dy, dw, dh);
 
-  
+    return canvas.toDataURL("image/png");
+  }
 
-  // Dados via seletores
+  // =========== Dados via seletores ===========
   const pageTitleText = ($(CONFIG.selectors.title)?.textContent || document.title || "").trim();
   const pageExcerptText = ($(CONFIG.selectors.excerpt)?.textContent || "").trim();
-  const ogImageUrl = getOgImage();
+  const ogUrl = getOgImage();
 
-  // Overlay raiz
+  // =========== Overlay raiz ===========
   const overlay = document.createElement("div");
   overlay.id = "ig-card-overlay";
   Object.assign(overlay.style, {
@@ -129,12 +132,20 @@ async function makeBlurBgDataURL(src, targetW, targetH, { blurPx = 28, brightnes
     display: "flex", alignItems: "center", justifyContent: "center", padding: "24px",
   });
   document.body.appendChild(overlay);
-  document.documentElement.style.zoom = "0.5";
 
+  // CSS externo
+  const linkCss = document.createElement("link");
+  linkCss.rel = "stylesheet";
+  linkCss.href = CONFIG.CSS_URL;
+  overlay.appendChild(linkCss);
 
-  // CSS externo (obrigatório)
-  if (!CONFIG.CSS_URL) { alert("Defina CONFIG.CSS_URL com a URL do CSS externo."); return; }
-  const linkCss = document.createElement("link"); linkCss.rel = "stylesheet"; linkCss.href = CONFIG.CSS_URL; overlay.appendChild(linkCss);
+  // 👇 pequeno CSS auxiliar só para o <img> do fundo (não conflita com seu arquivo)
+  const extraCss = document.createElement("style");
+  extraCss.textContent = `
+    #ig-bg-blur { position:absolute; inset:0; z-index:1; overflow:hidden; }
+    #ig-bg-blur-img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  `;
+  overlay.appendChild(extraCss);
 
   // Fonte Poppins
   const linkFont = document.createElement("link");
@@ -142,12 +153,21 @@ async function makeBlurBgDataURL(src, targetW, targetH, { blurPx = 28, brightnes
   linkFont.href = "https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap";
   overlay.appendChild(linkFont);
 
-  // Estrutura DOM
+  // =========== DOM do Card ===========
   const wrap = document.createElement("div"); wrap.className = "ig-wrap";
   const card = document.createElement("div"); card.id = "ig-card";
+
+  // Fundo agora É um <img> (bitmap já-borrado)
   const bgBlur = document.createElement("div"); bgBlur.id = "ig-bg-blur";
+  const bgBlurImg = document.createElement("img"); bgBlurImg.id = "ig-bg-blur-img";
+  bgBlur.appendChild(bgBlurImg);
+
+  // Imagem principal (contain)
   const fgWrap = document.createElement("div"); fgWrap.id = "ig-fg-wrap";
-  const fgImg = document.createElement("img"); fgImg.id = "ig-fg-img"; fgWrap.appendChild(fgImg);
+  const fgImg = document.createElement("img"); fgImg.id = "ig-fg-img";
+  fgWrap.appendChild(fgImg);
+
+  // Conteúdo
   const stack = document.createElement("div"); stack.id = "ig-stack";
 
   // Brand (topo esquerdo)
@@ -156,7 +176,6 @@ async function makeBlurBgDataURL(src, targetW, targetH, { blurPx = 28, brightnes
   const brandText = document.createElement("span"); brandText.textContent = CONFIG.brand.text;
   brand.append(brandImg, brandText);
 
-  // Header (título + resumo com borda vermelha à esquerda)
   const header = document.createElement("div"); header.id = "ig-header";
   const hTitle = document.createElement("h1"); hTitle.className = "title"; hTitle.textContent = pageTitleText;
   const pExcerpt = document.createElement("p"); pExcerpt.className = "excerpt"; pExcerpt.textContent = pageExcerptText;
@@ -207,43 +226,52 @@ async function makeBlurBgDataURL(src, targetW, targetH, { blurPx = 28, brightnes
 
   overlay.append(wrap, panel, btnClose);
 
-  // Lógica
+  // =========== Lógica ===========
   (async function init() {
-    // Brand icon
-    try { brandImg.src = await tryFetch(CONFIG.brand.iconUrl); }
-    catch { brandImg.src = proxify(CONFIG.brand.iconUrl); }
+    // carrega brand
+    try {
+      const iconDataURL = await fetchAsDataURL(CONFIG.brand.iconUrl);
+      brandImg.src = iconDataURL;
+    } catch {
+      brandImg.src = proxify(CONFIG.brand.iconUrl);
+    }
 
-    // Fundo blur + imagem principal
-    const ogUrl = getOgImage();
+    // Pega og:image -> vira dataURL -> aplica em frente e GERA fundo borrado (bitmap)
+    let masterDataURL = null;
     if (ogUrl) {
       try {
-        const dataUrl = await tryFetch(ogUrl);
-        const processed = await makeBlurBgDataURL(dataUrl, CONFIG.card.width, CONFIG.card.heightByAspect[currentAspect], {
-          blurPx: CONFIG.card.bgBlurPx,
-          brightness: CONFIG.card.bgDim, // 0.85 => 85%
-          extraScale: 1.06               // substitui o antigo transform: scale(1.06)
-        });
-        bgBlur.style.backgroundImage = `url('${processed}')`;
-        fgImg.src = dataUrl;
-      } catch {
-        bgBlur.style.backgroundImage = `url('${ogUrl}')`;
-        fgImg.src = ogUrl;
+        masterDataURL = await fetchAsDataURL(ogUrl);
+        fgImg.src = masterDataURL;
+
+        const aspect = CONFIG.card.defaultAspect;
+        const blurred = await makeBlurBgDataURL(
+          masterDataURL,
+          CONFIG.card.width,
+          CONFIG.card.heightByAspect[aspect],
+          { blurPx: CONFIG.card.bgBlurPx, brightness: CONFIG.card.bgDim, extraScale: 1.06 }
+        );
+        bgBlurImg.src = blurred;
+      } catch (e) {
+        console.warn("Falha ao processar bg blur; usando fallback simples.", e);
+        // Fallback: usa a própria imagem sem blur (para você não ficar sem preview)
+        if (masterDataURL) {
+          bgBlurImg.src = masterDataURL;
+        }
       }
     }
 
     // Estados
     let scale = 1.0;
     const step = 0.05, minScale = 0.7, maxScale = 1.6;
-    let fgZoom = 1.0;
-    let fgOffsetX = 0, fgOffsetY = 0;
+    let fgZoom = 1.0, fgOffsetX = 0, fgOffsetY = 0;
     let excerptsHidden = false;
     let currentAspect = CONFIG.card.defaultAspect;
 
     // Aplicadores
     const txtScaleOut = document.getElementById("ig-txt-scale");
     function applyScale() {
-      const baseTitle = 53, baseLineTitle = 64;
-      const baseExcerpt = 30, baseLineExcerpt = 43;
+      const baseTitle = 32, baseLineTitle = 40;
+      const baseExcerpt = 18, baseLineExcerpt = 26;
       hTitle.style.fontSize = (baseTitle * scale) + "px";
       hTitle.style.lineHeight = (baseLineTitle * scale) + "px";
       pExcerpt.style.fontSize = (baseExcerpt * scale) + "px";
@@ -256,24 +284,29 @@ async function makeBlurBgDataURL(src, targetW, targetH, { blurPx = 28, brightnes
       document.getElementById("ig-fg-posx-out").textContent = `${fgOffsetX}%`;
       document.getElementById("ig-fg-posy-out").textContent = `${fgOffsetY}%`;
     }
-    function setAspect(aspect) {
+    async function setAspect(aspect) {
       currentAspect = aspect;
       card.style.height = (CONFIG.card.heightByAspect[aspect]) + "px";
-
-      if (fgImg.src) {
-        makeBlurBgDataURL(fgImg.src, CONFIG.card.width, CONFIG.card.heightByAspect[aspect], {
-          blurPx: CONFIG.card.bgBlurPx,
-          brightness: CONFIG.card.bgDim,
-          extraScale: 1.06
-        }).then((durl) => { bgBlur.style.backgroundImage = `url('${durl}')`; });
-      }
-
-      
       document.getElementById("ig-btn-11").style.opacity = aspect === "1:1" ? "1" : "0.8";
       document.getElementById("ig-btn-45").style.opacity = aspect === "4:5" ? "1" : "0.8";
+      // regera o fundo borrado para a nova altura
+      if (masterDataURL) {
+        try {
+          const blurred = await makeBlurBgDataURL(
+            masterDataURL,
+            CONFIG.card.width,
+            CONFIG.card.heightByAspect[aspect],
+            { blurPx: CONFIG.card.bgBlurPx, brightness: CONFIG.card.bgDim, extraScale: 1.06 }
+          );
+          bgBlurImg.src = blurred;
+        } catch (e) {
+          console.warn("Falha ao reprocessar bg blur no setAspect.", e);
+          bgBlurImg.src = masterDataURL; // fallback sem blur
+        }
+      }
     }
 
-    // Eventos
+    // Eventos UI
     document.getElementById("ig-btn-dec").onclick = () => { scale = Math.max(minScale, Math.round((scale - step) * 100) / 100); applyScale(); };
     document.getElementById("ig-btn-inc").onclick = () => { scale = Math.min(maxScale, Math.round((scale + step) * 100) / 100); applyScale(); };
     document.getElementById("ig-btn-reset").onclick = () => {
@@ -288,8 +321,6 @@ async function makeBlurBgDataURL(src, targetW, targetH, { blurPx = 28, brightnes
     document.getElementById("ig-fg-zoom").oninput = (e) => { fgZoom = parseFloat(e.target.value || "1"); applyFgTransform(); };
     document.getElementById("ig-fg-posx").oninput = (e) => { fgOffsetX = parseInt(e.target.value || "0", 10); applyFgTransform(); };
     document.getElementById("ig-fg-posy").oninput = (e) => { fgOffsetY = parseInt(e.target.value || "0", 10); applyFgTransform(); };
-
-    // 🪄 Ocultar resumo => "jc.com.br"
     document.getElementById("ig-btn-toggle-excerpt").onclick = () => {
       const willReplace = !excerptsHidden;
       if (willReplace) { if (!pExcerpt.dataset.igOriginal) pExcerpt.dataset.igOriginal = pExcerpt.innerHTML; pExcerpt.innerHTML = "jc.com.br"; }
@@ -297,35 +328,55 @@ async function makeBlurBgDataURL(src, targetW, targetH, { blurPx = 28, brightnes
       excerptsHidden = !excerptsHidden;
       document.getElementById("ig-btn-toggle-excerpt").textContent = excerptsHidden ? "🪄 Mostrar resumo" : "🪄 Ocultar resumo";
     };
-
     document.getElementById("ig-btn-11").onclick = () => setAspect("1:1");
     document.getElementById("ig-btn-45").onclick = () => setAspect("4:5");
 
     // Estados iniciais
-    applyScale(); applyFgTransform(); setAspect(CONFIG.card.defaultAspect);
+    applyScale(); applyFgTransform(); await setAspect(CONFIG.card.defaultAspect);
 
-    // ===== Salvar PNG (força zoom 100% durante captura e restaura) =====
+    // ===== Salvar PNG (espera as imagens; força zoom 100% durante captura) =====
     function ensureHtml2Canvas(cb) {
       if (window.html2canvas) return cb();
       const s = document.createElement("script"); s.src = CONFIG.html2canvasUrl; s.onload = cb; document.body.appendChild(s);
     }
+    function waitFor(img) {
+      if (!img || img.complete) return Promise.resolve();
+      return new Promise((res, rej) => { img.addEventListener("load", res, { once: true }); img.addEventListener("error", rej, { once: true }); });
+    }
+
     document.getElementById("ig-btn-save").onclick = () => {
-      ensureHtml2Canvas(() => {
-        (document.fonts?.ready || Promise.resolve()).finally(() => {
-          const prevZoom = document.documentElement.style.zoom;     // guarda o zoom atual (provavelmente vazio)
-          document.documentElement.style.zoom = "";                 // força “sem zoom” (equivalente a 100%)
-          window.html2canvas(card, {
-            useCORS: true, allowTaint: false,
-            backgroundColor: CONFIG.card.backgroundColor,
-            scale: 2, imageTimeout: 0, proxy: CONFIG.proxy
-          }).then((canvas) => {
-            const now = new Date(); const pad = (n) => String(n).padStart(2,"0");
-            const ts = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}`;
-            const safeTitle = (document.title || "post-thumbnail").replace(/[\\\/:*?"<>|]/g, "").trim();
-            const a = document.createElement("a"); a.download = `${safeTitle}_${ts}.png`;
-            a.href = canvas.toDataURL("image/png"); a.click();
-            document.documentElement.style.zoom = prevZoom;         // restaura zoom da página (se houver)
-          });
+      ensureHtml2Canvas(async () => {
+        try {
+          await Promise.all([
+            waitFor(bgBlurImg),
+            waitFor(fgImg),
+            (document.fonts?.ready || Promise.resolve())
+          ]);
+        } catch (e) {
+          console.warn("Alguma imagem não carregou a tempo, tentando mesmo assim.", e);
+        }
+        const prevZoom = document.documentElement.style.zoom;
+        document.documentElement.style.zoom = ""; // 100% durante a captura
+        window.html2canvas(card, {
+          useCORS: true,
+          allowTaint: true, // estamos usando dataURL; libera geral
+          backgroundColor: CONFIG.card.backgroundColor,
+          scale: 2,
+          imageTimeout: 0,
+          proxy: CONFIG.proxy
+        }).then((canvas) => {
+          const now = new Date(); const pad = (n) => String(n).padStart(2,"0");
+          const ts = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}`;
+          const safeTitle = (document.title || "post-thumbnail").replace(/[\\\/:*?"<>|]/g, "").trim();
+          const a = document.createElement("a");
+          a.download = `${safeTitle}_${ts}.png`;
+          a.href = canvas.toDataURL("image/png");
+          a.click();
+          document.documentElement.style.zoom = prevZoom; // restaura
+        }).catch((e) => {
+          document.documentElement.style.zoom = prevZoom;
+          alert("Falha ao capturar a imagem. Veja o console para detalhes.");
+          console.error(e);
         });
       });
     };
