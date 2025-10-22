@@ -42,10 +42,10 @@ html,body{margin:0;padding:0;background:#0b0b2a;color:#fff;font-family:'Poppins'
 #ig-stack{ position:absolute; inset:0; display:flex; flex-direction:column; justify-content:space-between; z-index:3; }
 
 /* Brand no topo esquerdo */
-#ig-brand{ display:flex; align-items:center; color:#fff; }
+#ig-brand{ display:flex; align-items:center; color:#fff; justify-content: flex-end; }
 #ig-brand img{
   width:130px; height:130px; object-fit:cover; border-radius:8px; display:block;
-  filter:drop-shadow(0 1px 2px rgba(0,0,0,.4)); margin:2rem 0 0 2rem; /* topo/esquerda */
+  filter:drop-shadow(0 1px 2px rgba(0,0,0,.4)); margin:5rem; /* topo/esquerda */
 }
 #ig-brand span{
   font-weight:700; font-size:20px; letter-spacing:.2px; text-shadow:0 1px 2px rgba(0,0,0,.4);
