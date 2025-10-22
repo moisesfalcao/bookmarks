@@ -73,7 +73,7 @@ html,body{margin:0;padding:0;background:#0b0b2a;color:#fff;font-family:'Poppins'
   display:flex; flex-direction:column; gap:10px; width:260px;
   background:var(--panel-bg); color:var(--panel-fg);
   border-radius:10px; padding:12px; box-shadow:0 6px 18px rgba(0,0,0,.35);
-  z-index:9999;
+  z-index:9999; font-size:1.6rem;
 }
 #ig-panel button{
   padding:8px 10px; border-radius:8px; border:1px solid #3d3d7a; background:#1a1a4a; color:#fff; cursor:pointer; font-size:14px; font-weight:600;
