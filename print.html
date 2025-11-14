@@ -1,125 +1,246 @@
-:root {
-  --baseline: 4mm;
-  --gutter: 4mm;
-}
-
-@page {
-  size: 280mm 430mm;
-  margin: 10mm;
-}
-
-html, body {
-  margin: 0;
-  padding: 0;
-}
-
-.page {
-  width: 260mm;
-  height: 410mm;
-  padding: 10mm;
-  box-sizing: border-box;
-  background: #fff;
-
-  display: grid;
-  grid-template-columns: repeat(5, 1fr); /* 5 colunas fixas */
-  grid-auto-rows: minmax(var(--baseline), auto);
-  column-gap: var(--gutter);
-  row-gap: var(--baseline);
-  font-family: "Times New Roman", Georgia, serif;
-}
-
-/* Cabeçalho simples no topo */
-.page-head {
-  grid-column: 1 / 6;
-  grid-row: 1 / 2;
-  display: flex;
-  justify-content: space-between;
-  font-size: 8pt;
-}
-
-/* Coluna lateral (ocupa a 1ª coluna em boa parte da página) */
-.sidebar {
-  grid-column: 1 / 2;
-  grid-row: 2 / 20;
-  font-size: 8.5pt;
-  line-height: var(--baseline);
-}
-
-.rotulo-opiniao {
-  font-weight: bold;
-  margin-bottom: var(--baseline);
-}
-
-/* Título principal: colunas 2 a 5 */
-.titulo {
-  grid-column: 2 / 6;
-  grid-row: 2 / 5;
-  font-size: 20pt;
-  line-height: 1.1;
-  margin: 0 0 var(--baseline) 0;
-}
-
-/* Foto: pega colunas 2 e 3 */
-.foto {
-  grid-column: 2 / 4;
-  grid-row: 5 / 16;
-  margin: 0;
-}
-
-.foto img {
-  width: 100%;
-  height: auto;
-  display: block;
-}
-
-/* Corpo do texto:
-   começa à direita da foto e depois passa por baixo */
-.corpo {
-  grid-column: 4 / 6;
-  grid-row: 5 / 30;
-  font-size: 9pt;
-  line-height: var(--baseline);
-  text-align: justify;
-  hyphens: auto;
-}
-
-/* Dropcap simples */
-.dropcap::first-letter {
-  float: left;
-  font-size: 24pt;
-  line-height: 1;
-  padding-right: 2mm;
-}
-
-/* Subtítulos internos seguindo a coluna */
-.subtitulo {
-  font-size: 10pt;
-  font-weight: bold;
-  margin: calc(var(--baseline) * 1) 0;
-}
-
-/* PRINT vs SCREEN (sombras, fundo, etc) */
-@media screen {
-  body {
-    background: #ccc;
-    display: flex;
-    justify-content: center;
-    padding: 20px;
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Voz do Leitor - JC</title>
+<style>
+  :root {
+    --baseline: 4mm;
+    --gutter: 4mm;
   }
-  .page {
-    box-shadow: 0 0 12px rgba(0,0,0,.4);
-  }
-}
 
-@media print {
-  body {
+  /* Tamanho físico da página – 28 x 43 cm */
+  @page {
+    size: 280mm 430mm;
+    margin: 10mm;
+  }
+
+  html, body {
     margin: 0;
     padding: 0;
-    background: none;
   }
+
+  /* ESPELHO DA PÁGINA (5 colunas fixas) */
   .page {
-    box-shadow: none;
+    width: 260mm;   /* 280 - 2x10mm */
+    height: 410mm;  /* 430 - 2x10mm */
+    padding: 10mm;
+    box-sizing: border-box;
+    background: #fff;
+
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-auto-rows: minmax(var(--baseline), auto);
+    column-gap: var(--gutter);
+    row-gap: var(--baseline);
+
+    font-family: "Times New Roman", Georgia, serif;
+  }
+
+  /* PRÉVIA NA TELA */
+  @media screen {
+    body {
+      background: #ccc;
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .page {
+      box-shadow: 0 0 12px rgba(0,0,0,.4);
+    }
+  }
+
+  /* IMPRESSÃO */
+  @media print {
+    body {
+      margin: 0;
+      padding: 0;
+      background: none;
+    }
+    .page {
+      width: 100%;
+      height: auto;
+      box-shadow: none;
+    }
+  }
+
+  /* CABEÇALHO SUPERIOR (nome da editoria + data/página) */
+  .page-head {
+    grid-column: 1 / 6;
+    grid-row: 1 / 2;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    font-size: 8pt;
+  }
+
+  .page-head .editoria {
+    font-weight: bold;
+    color: #004f9f;
+    font-size: 14pt;
+  }
+
+  .page-head .info-edicao {
+    font-size: 8pt;
+  }
+
+  /* FILETE CINZA LOGO ABAIXO DO CABEÇALHO */
+  .barra-cinza {
+    grid-column: 1 / 6;
+    grid-row: 2 / 3;
+    border-top: 3px solid #e0e0e0;
+  }
+
+  /* SIDEBAR ESQUERDA (FISCALIZAÇÃO + chamada) */
+  .sidebar {
+    grid-column: 1 / 2;
+    grid-row: 3 / 20;
+    font-size: 8.5pt;
+    line-height: var(--baseline);
+  }
+
+  .sidebar .rotulo {
+    font-weight: bold;
+    margin-bottom: var(--baseline);
+  }
+
+  .sidebar .chamada {
+    color: #c62828; /* vermelho da chamada */
+  }
+
+  /* TÍTULO PRINCIPAL - ocupa colunas 2 a 5 */
+  .titulo {
+    grid-column: 2 / 6;
+    grid-row: 3 / 6;
+    font-size: 20pt;
+    line-height: 1.1;
+    margin: 0;
+  }
+
+  /* FOTO GRANDE CENTRAL (tipo radar) */
+  .foto {
+    grid-column: 2 / 5;
+    grid-row: 6 / 22;
+    margin: 0;
+  }
+
+  .foto img {
     width: 100%;
     height: auto;
+    display: block;
   }
-}
+
+  .foto figcaption {
+    font-size: 7.5pt;
+    margin-top: 2mm;
+  }
+
+  /* TEXTO PRINCIPAL DA COLUNA (acima da dobra) */
+  .texto-principal {
+    grid-column: 1 / 6;
+    grid-row: 22 / 30;
+    font-size: 9pt;
+    line-height: var(--baseline);
+    text-align: justify;
+    hyphens: auto;
+    -webkit-hyphens: auto;
+
+    column-count: 3;   /* 3 colunas abaixo da foto, como na página real */
+    column-gap: var(--gutter);
+  }
+
+  .texto-principal p {
+    margin: 0 0 var(--baseline);
+  }
+
+  .texto-principal h2 {
+    font-size: 10pt;
+    font-weight: bold;
+    margin: calc(var(--baseline) * 1) 0 var(--baseline) 0;
+    break-inside: avoid-column;
+  }
+
+  .assinatura {
+    font-weight: bold;
+    font-size: 8.5pt;
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- Cabeçalho -->
+  <header class="page-head">
+    <div class="editoria">Voz do Leitor</div>
+    <div class="info-edicao">
+      Recife, sexta-feira, 14 de novembro de 2025 &nbsp;&nbsp; Jornal do Commercio 35
+    </div>
+  </header>
+
+  <div class="barra-cinza"></div>
+
+  <!-- Sidebar esquerda -->
+  <aside class="sidebar">
+    <div class="rotulo">FISCALIZAÇÃO</div>
+    <p class="chamada">
+      Denúncia da leitora da coluna ocorre na descida do viaduto Capitão Temudo,
+      no bairro da Joana Bezerra, na região central do Recife.
+    </p>
+  </aside>
+
+  <!-- Título principal -->
+  <h1 class="titulo">
+    Radar de velocidade sem placa informativa
+  </h1>
+
+  <!-- Foto -->
+  <figure class="foto">
+    <img src="radar.jpg" alt="Radar de velocidade">
+    <figcaption>Radar de velocidade sem placa informativa.</figcaption>
+  </figure>
+
+  <!-- Texto em 3 colunas abaixo da foto -->
+  <section class="texto-principal">
+
+    <h2>RADAR DE VELOCIDADE SEM PLACA INFORMATIVA</h2>
+    <p>
+      A Prefeitura do Recife, por meio da Autarquia de Trânsito, instalou um novo equipamento
+      de controle de velocidade na descida do viaduto Capitão Temudo. O problema é que não há
+      qualquer placa informando o limite de velocidade no local...
+    </p>
+    <p>
+      Motoristas que utilizam o trecho diariamente relatam que não sabem se o limite é
+      50 km/h, 60 km/h ou outro valor. Além disso, o radar fica logo após uma curva,
+      o que aumenta a sensação de surpresa e insegurança.
+    </p>
+    <p class="assinatura">
+      Maria José, leitora
+    </p>
+
+    <h2>DESORGANIZAÇÃO NAS OBRAS DA PE</h2>
+    <p>
+      Em outro ponto da cidade, as obras de recapeamento da rodovia estadual têm causado
+      transtornos por falta de sinalização adequada...
+    </p>
+    <p class="assinatura">
+      Nome do leitor
+    </p>
+
+    <h2>SUJEIRA EM ABASTECEDOURO</h2>
+    <p>
+      Moradores reclamam da falta de limpeza em um dos pontos de abastecimento de água
+      da comunidade. Segundo relatos, o lixo se acumula nas proximidades e ninguém
+      aparece para realizar a manutenção...
+    </p>
+    <p class="assinatura">
+      Outro leitor
+    </p>
+
+  </section>
+
+</div>
+
+</body>
+</html>
