@@ -71,50 +71,63 @@
   .page p {
     margin: 0 0 var(--baseline);
     font-family: "Times New Roman", Georgia, serif;
-    font-size: 9pt;                   /* menor que antes */
-    line-height: var(--baseline);     /* todas as linhas na mesma grade */
+    font-size: 9pt;
+    line-height: var(--baseline);  /* mantém todas as linhas na grade */
     text-align: justify;
     hyphens: auto;
     -webkit-hyphens: auto;
   }
 
-  /* Títulos principais */
-  .page h1,
-  .page h2 {
+  /* Manchete geral – ainda ocupa todas as colunas */
+  .page h1 {
     column-span: all;
     font-family: "Times New Roman", Georgia, serif;
-    line-height: var(--baseline);
-    /* margens em múltiplos da baseline,
-       para não quebrar o alinhamento das linhas seguintes */
-  }
-
-  .page h1 {
     font-size: 16pt;
+    line-height: var(--baseline);
     margin-top: calc(var(--baseline) * 2);
     margin-bottom: calc(var(--baseline) * 2);
   }
 
+  /* Subtítulo interno da matéria (segue dentro da coluna) */
   .page h2 {
+    /* NÃO tem column-span */
+    font-family: "Times New Roman", Georgia, serif;
     font-size: 11pt;
     font-weight: bold;
+    line-height: var(--baseline);
     margin-top: calc(var(--baseline) * 1);
     margin-bottom: calc(var(--baseline) * 1);
-  }
 
+    /* Evita quebrar o subtítulo no meio de uma coluna */
+    break-inside: avoid-column;
+    page-break-inside: avoid;
+  }
 </style>
 </head>
 <body>
   <div class="page">
     <h1>Manchete do Jornal</h1>
-    <p>Primeiro parágrafo da matéria, já alinhado na grade de linhas que será seguida em todas as colunas...</p>
 
-    <h2>Subtítulo / seção interna</h2>
-    <p>Após o subtítulo, o texto continua e as linhas permanecem alinhadas entre as colunas, porque o h2 ocupa um número inteiro de linhas da baseline.</p>
-    <p>Após o subtítulo, o texto continua e as linhas permanecem alinhadas entre as colunas, porque o h2 ocupa um número inteiro de linhas da baseline.</p>
-    <h2>Subtítulo / seção interna</h2>
-    <p>Após o subtítulo, o texto continua e as linhas permanecem alinhadas entre as colunas, porque o h2 ocupa um número inteiro de linhas da baseline.</p>
-    <p>Após o subtítulo, o texto continua e as linhas permanecem alinhadas entre as colunas, porque o h2 ocupa um número inteiro de linhas da baseline.</p>
-    <p>Com a fonte menor e a hifenização ativada, a tendência é diminuir bastante os espaços exagerados entre palavras nas colunas estreitas.</p>
+    <p>Primeiro parágrafo da matéria, alinhado na grade de linhas que será seguida em todas as colunas...</p>
+    <p>Segundo parágrafo, ainda antes do subtítulo interno. O texto segue normalmente, ocupando a mesma coluna até atingir o limite e fluir para a próxima.</p>
+    <p>Segundo parágrafo, ainda antes do subtítulo interno. O texto segue normalmente, ocupando a mesma coluna até atingir o limite e fluir para a próxima.</p>
+    <p>Segundo parágrafo, ainda antes do subtítulo interno. O texto segue normalmente, ocupando a mesma coluna até atingir o limite e fluir para a próxima.</p>
+    <p>Segundo parágrafo, ainda antes do subtítulo interno. O texto segue normalmente, ocupando a mesma coluna até atingir o limite e fluir para a próxima.</p>
+    <p>Segundo parágrafo, ainda antes do subtítulo interno. O texto segue normalmente, ocupando a mesma coluna até atingir o limite e fluir para a próxima.</p>
+    <p>Segundo parágrafo, ainda antes do subtítulo interno. O texto segue normalmente, ocupando a mesma coluna até atingir o limite e fluir para a próxima.</p>
+
+    <h2>Subtítulo interno da matéria</h2>
+    <p>Esse parágrafo já vem logo na sequência do subtítulo, dentro da mesma coluna. As outras colunas permanecem com as linhas alinhadas porque o h2 respeita a mesma line-height e margens em múltiplos da baseline.</p>
+    <p>Com fonte menor, hifenização e grid de linhas, você reduz os buracos do justify e ganha um visual bem próximo de um jornal diagramado na mão.</p>
+    <p>Segundo parágrafo, ainda antes do subtítulo interno. O texto segue normalmente, ocupando a mesma coluna até atingir o limite e fluir para a próxima.</p>
+    <p>Segundo parágrafo, ainda antes do subtítulo interno. O texto segue normalmente, ocupando a mesma coluna até atingir o limite e fluir para a próxima.</p>
+    <p>Segundo parágrafo, ainda antes do subtítulo interno. O texto segue normalmente, ocupando a mesma coluna até atingir o limite e fluir para a próxima.</p>
+    <p>Segundo parágrafo, ainda antes do subtítulo interno. O texto segue normalmente, ocupando a mesma coluna até atingir o limite e fluir para a próxima.</p>
+    <p>Segundo parágrafo, ainda antes do subtítulo interno. O texto segue normalmente, ocupando a mesma coluna até atingir o limite e fluir para a próxima.</p>
+    <p>Segundo parágrafo, ainda antes do subtítulo interno. O texto segue normalmente, ocupando a mesma coluna até atingir o limite e fluir para a próxima.</p>
+    <p>Segundo parágrafo, ainda antes do subtítulo interno. O texto segue normalmente, ocupando a mesma coluna até atingir o limite e fluir para a próxima.</p>
+    <p>Segundo parágrafo, ainda antes do subtítulo interno. O texto segue normalmente, ocupando a mesma coluna até atingir o limite e fluir para a próxima.</p>
+    <p>Segundo parágrafo, ainda antes do subtítulo interno. O texto segue normalmente, ocupando a mesma coluna até atingir o limite e fluir para a próxima.</p>
   </div>
 </body>
 </html>
