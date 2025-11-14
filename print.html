@@ -2,12 +2,16 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Jornal 5 colunas</title>
+<title>Jornal 5 colunas - 28x43cm</title>
+
 <style>
-  /* Tamanho físico do papel A4 para manter proporção */
+  /* ------------------------------------
+     Define tamanho FÍSICO da página (gráfica)
+     28 cm x 43 cm = 280mm x 430mm
+  ------------------------------------ */
   @page {
-    size: A4 portrait;
-    margin: 10mm;
+    size: 280mm 430mm; /* largura x altura */
+    margin: 10mm;      /* ajuste conforme a gráfica pedir */
   }
 
   html, body {
@@ -15,10 +19,12 @@
     padding: 0;
   }
 
-  /* Visualização na tela */
+  /* ------------------------------------
+     MODO TELA — simula a página impressa
+  ------------------------------------ */
   @media screen {
     body {
-      background: #e0e0e0;
+      background: #cccccc;
       display: flex;
       justify-content: center;
       padding: 20px;
@@ -26,19 +32,21 @@
     }
 
     .page {
-      background: white;
-      width: 190mm;   /* 210mm - margens do @page aproximadas */
-      height: 277mm;  /* 297mm - margens do @page aproximadas */
-      box-shadow: 0 0 10px rgba(0,0,0,.4);
+      background: #fff;
+      width: 260mm;   /* 280mm - 2x10mm de margem */
+      height: 410mm;  /* 430mm - 2x10mm de margem */
+      box-shadow: 0 0 12px rgba(0,0,0,0.4);
       padding: 10mm;
       box-sizing: border-box;
 
       column-count: 5;
-      column-gap: 4mm;
+      column-gap: 5mm;
     }
   }
 
-  /* Layout de impressão */
+  /* ------------------------------------
+     MODO IMPRESSÃO — mantém proporções
+  ------------------------------------ */
   @media print {
     body {
       margin: 0;
@@ -54,13 +62,15 @@
       box-sizing: border-box;
 
       column-count: 5;
-      column-gap: 4mm;
+      column-gap: 5mm;
 
       page-break-after: always;
     }
   }
 
-  /* Estilo básico de texto */
+  /* ------------------------------------
+     Tipografia e estilo de jornal
+  ------------------------------------ */
   .page p {
     margin: 0 0 4mm;
     font-family: "Times New Roman", Georgia, serif;
@@ -71,25 +81,48 @@
 
   .page h1, .page h2 {
     column-span: all;
-    font-family: "Times New Roman", Georgia, serif;
     margin: 0 0 4mm;
+    font-family: "Times New Roman", Georgia, serif;
   }
 
-  .page h1 {
-    font-size: 18pt;
-  }
+  .page h1 { font-size: 22pt; }
+  .page h2 { font-size: 15pt; }
 
-  .page h2 {
-    font-size: 14pt;
-  }
 </style>
 </head>
+
 <body>
-  <div class="page">
-    <h1>Título principal do jornal</h1>
-    <h2>Subtítulo / linha fina</h2>
-    <p>Seu texto de jornal vai aqui, e quanto mais texto, mais ele serpenteia pelas 5 colunas, como num jornal impresso...</p>
-    <!-- repita mais <p>...</p> -->
-  </div>
+
+<div class="page">
+  <h1>Manchete do Jornal</h1>
+  <h2>Linha fina explicativa</h2>
+
+  <p>
+
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin commodo libero eros, non volutpat orci mollis sed. Morbi gravida rutrum tortor sed imperdiet. Suspendisse mattis sapien eget lorem suscipit, in efficitur odio imperdiet. Nullam eu odio velit. Mauris neque quam, euismod nec lacus ut, ornare rhoncus tortor. Pellentesque condimentum ante in ligula eleifend iaculis. Duis eros justo, pellentesque vel nulla nec, rhoncus pretium ligula. Morbi varius nec ligula at sodales. Praesent sem nulla, tincidunt tincidunt orci eu, rutrum semper leo.
+
+Praesent arcu libero, pretium sed nulla sed, mollis feugiat odio. Integer sit amet viverra orci. Integer condimentum vel orci sed egestas. Proin vel fermentum felis. Suspendisse quis suscipit turpis, a laoreet ligula. Sed nec sodales turpis. Nam bibendum quis ligula non maximus.
+
+In ac scelerisque metus, sit amet posuere nisi. In hac habitasse platea dictumst. Interdum et malesuada fames ac ante ipsum primis in faucibus. Fusce ullamcorper laoreet nisi in finibus. Donec rhoncus orci eu lectus sodales, at volutpat nulla egestas. Phasellus vitae ligula quis lorem cursus hendrerit at in quam. Sed cursus efficitur metus, non vestibulum elit finibus sed. Sed vulputate eleifend elit, sagittis molestie nisi dapibus sit amet. Aenean eget dictum nunc, vel dictum velit. Integer ultricies diam orci, ut congue purus consequat nec. Etiam quis lorem quis erat elementum condimentum. Ut nec dolor dolor. Curabitur venenatis imperdiet turpis, vel elementum leo viverra eu. Suspendisse vel semper turpis. Fusce consectetur elit at gravida pulvinar. Praesent faucibus nunc nec tempor pellentesque.
+
+Sed ipsum turpis, mattis in ultrices vel, lobortis at justo. Nullam et nisi quis sapien venenatis rhoncus. Fusce rutrum in turpis a ullamcorper. Donec id sapien aliquet ex iaculis hendrerit et sit amet justo. Duis vel quam ac lorem consequat dapibus vitae sit amet orci. Praesent eu lobortis nulla. Morbi pulvinar fermentum purus, rhoncus porta erat commodo nec. Aliquam erat volutpat. Proin quis tellus quis augue maximus porta efficitur in tellus. Nullam finibus iaculis est, et malesuada quam varius a. Pellentesque neque libero, laoreet nec bibendum eu, accumsan non eros.
+
+Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Curabitur ac dignissim nisl, consectetur porttitor magna. Sed sit amet orci sed felis fringilla condimentum. Ut et tellus eros. Sed aliquam volutpat scelerisque. Nam nec tellus in dolor pretium convallis vitae eu tellus. Cras ac eros elementum, tincidunt libero ac, ullamcorper lacus.
+
+Ut egestas efficitur nisi in accumsan. Suspendisse commodo rutrum dui, ut eleifend lacus lacinia quis. In euismod vulputate condimentum. In maximus tellus nunc, quis auctor metus tincidunt mollis. Integer interdum, est ut pellentesque bibendum, felis est euismod justo, eu faucibus quam arcu eu velit. Nullam vel malesuada enim. Etiam eu feugiat nunc. Etiam vitae magna bibendum, vestibulum ligula nec, cursus quam. Ut interdum accumsan arcu nec tincidunt. Suspendisse molestie tristique ultrices. Phasellus consequat vestibulum sapien, at hendrerit tellus aliquam sit amet. Suspendisse potenti. Pellentesque facilisis mauris non tortor molestie, vel porttitor ante tempor.
+
+Praesent efficitur velit ac tempor ultricies. Fusce feugiat tincidunt interdum. Maecenas condimentum, massa ac viverra semper, arcu eros iaculis nunc, eu tristique lorem metus vitae elit. Integer accumsan ullamcorper ex, quis lobortis mauris auctor sit amet. Sed ante dolor, luctus ut fermentum eget, finibus vitae elit. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Duis scelerisque scelerisque lacinia.
+
+Integer eleifend, libero non dictum sagittis, sapien leo lobortis turpis, sed lacinia neque lectus in diam. Integer quis enim non diam euismod iaculis at sit amet erat. Ut eget ultricies tellus. Vestibulum nec egestas risus. Praesent vitae dignissim elit, at rutrum libero. Sed commodo in diam quis rhoncus. Aliquam erat volutpat. Nunc vestibulum mauris et diam tempor sollicitudin. Pellentesque mauris est, posuere non lorem sit amet, viverra dictum ipsum. Vestibulum porttitor quam vitae nibh viverra, ut vehicula sem pulvinar. Phasellus posuere diam eget est dictum, ac ultrices mi pulvinar. Nam eget mi eu nulla tincidunt malesuada. Donec egestas quam mi, iaculis imperdiet nisi malesuada eget. Duis lobortis egestas mauris et ornare. In suscipit quam iaculis eros mattis, at consectetur dui blandit.
+
+Sed at dignissim nibh, ac elementum elit. Proin nec metus aliquet, vehicula lacus nec, blandit augue. Vestibulum lectus enim, rutrum ut pellentesque a, condimentum eget felis. Cras vulputate turpis eget lectus cursus facilisis. Duis sed venenatis est. Nullam id vehicula nisi, non imperdiet ante. Quisque eu scelerisque lectus.
+
+Donec eget nisl sed enim volutpat egestas et at felis. Nunc tellus enim, viverra sed ullamcorper ut, mollis id ipsum. Pellentesque pretium arcu tellus, id commodo ante ullamcorper eget. Integer in posuere lectus. Nunc rhoncus libero magna, in molestie lorem vestibulum ac. Maecenas sed scelerisque nibh. Duis tempor dapibus nisi, a elementum est pharetra at. Praesent lacinia libero et porttitor lacinia. Fusce at vulputate tortor, vitae aliquam diam. Nam dolor nulla, pretium a hendrerit quis, rutrum quis lectus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam in aliquet urna. Nam a vehicula metus, vel ultrices odio.
+    
+  </p>
+  
+
+</div>
+
 </body>
 </html>
