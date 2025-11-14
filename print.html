@@ -1,120 +1,125 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<title>Jornal 5 colunas - 28x43cm</title>
+:root {
+  --baseline: 4mm;
+  --gutter: 4mm;
+}
 
-<style>
-  :root {
-    /* Altura da linha-base (baseline grid) */
-    --baseline: 4mm;
+@page {
+  size: 280mm 430mm;
+  margin: 10mm;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+.page {
+  width: 260mm;
+  height: 410mm;
+  padding: 10mm;
+  box-sizing: border-box;
+  background: #fff;
+
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); /* 5 colunas fixas */
+  grid-auto-rows: minmax(var(--baseline), auto);
+  column-gap: var(--gutter);
+  row-gap: var(--baseline);
+  font-family: "Times New Roman", Georgia, serif;
+}
+
+/* Cabeçalho simples no topo */
+.page-head {
+  grid-column: 1 / 6;
+  grid-row: 1 / 2;
+  display: flex;
+  justify-content: space-between;
+  font-size: 8pt;
+}
+
+/* Coluna lateral (ocupa a 1ª coluna em boa parte da página) */
+.sidebar {
+  grid-column: 1 / 2;
+  grid-row: 2 / 20;
+  font-size: 8.5pt;
+  line-height: var(--baseline);
+}
+
+.rotulo-opiniao {
+  font-weight: bold;
+  margin-bottom: var(--baseline);
+}
+
+/* Título principal: colunas 2 a 5 */
+.titulo {
+  grid-column: 2 / 6;
+  grid-row: 2 / 5;
+  font-size: 20pt;
+  line-height: 1.1;
+  margin: 0 0 var(--baseline) 0;
+}
+
+/* Foto: pega colunas 2 e 3 */
+.foto {
+  grid-column: 2 / 4;
+  grid-row: 5 / 16;
+  margin: 0;
+}
+
+.foto img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Corpo do texto:
+   começa à direita da foto e depois passa por baixo */
+.corpo {
+  grid-column: 4 / 6;
+  grid-row: 5 / 30;
+  font-size: 9pt;
+  line-height: var(--baseline);
+  text-align: justify;
+  hyphens: auto;
+}
+
+/* Dropcap simples */
+.dropcap::first-letter {
+  float: left;
+  font-size: 24pt;
+  line-height: 1;
+  padding-right: 2mm;
+}
+
+/* Subtítulos internos seguindo a coluna */
+.subtitulo {
+  font-size: 10pt;
+  font-weight: bold;
+  margin: calc(var(--baseline) * 1) 0;
+}
+
+/* PRINT vs SCREEN (sombras, fundo, etc) */
+@media screen {
+  body {
+    background: #ccc;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
   }
-
-  /* Tamanho físico da página da gráfica */
-  @page {
-    size: 280mm 430mm;
-    margin: 10mm;
+  .page {
+    box-shadow: 0 0 12px rgba(0,0,0,.4);
   }
+}
 
-  html, body {
+@media print {
+  body {
     margin: 0;
     padding: 0;
+    background: none;
   }
-
-  /* TELA: prévia fiel ao impresso */
-  @media screen {
-    body {
-      background: #cccccc;
-      display: flex;
-      justify-content: center;
-      padding: 20px;
-      box-sizing: border-box;
-    }
-
-    .page {
-      background: #fff;
-      width: 260mm;    /* 280 - 2x10mm */
-      height: 410mm;   /* 430 - 2x10mm */
-      box-shadow: 0 0 12px rgba(0,0,0,0.4);
-      padding: 10mm;
-      box-sizing: border-box;
-
-      column-count: 5;
-      column-gap: 5mm;
-      column-fill: balance;   /* <- tentar distribuir igualmente */
-      overflow: hidden;       /* garante "uma página" visual */
-    }
+  .page {
+    box-shadow: none;
+    width: 100%;
+    height: auto;
   }
-
-  /* IMPRESSÃO */
-  @media print {
-    body {
-      margin: 0;
-      padding: 0;
-      background: none;
-    }
-
-    .page {
-      width: 100%;
-      height: 410mm;          /* mesma altura da tela para manter proporção */
-      padding: 10mm;
-      box-sizing: border-box;
-      box-shadow: none;
-
-      column-count: 5;
-      column-gap: 5mm;
-      column-fill: balance;   /* <- tenta equilibrar as colunas também no print */
-
-      page-break-after: always;
-      overflow: hidden;       /* se passar disso, corta (como se "não coubesse na página") */
-    }
-  }
-
-  /* Texto corrido em grid de linhas */
-  .page p {
-    margin: 0 0 var(--baseline);
-    font-family: "Times New Roman", Georgia, serif;
-    font-size: 9pt;
-    line-height: var(--baseline);  /* todas as linhas na mesma grade */
-    text-align: justify;
-    hyphens: auto;
-    -webkit-hyphens: auto;
-  }
-
-  /* Manchete geral – ocupa todas as colunas */
-  .page h1 {
-    column-span: all;
-    font-family: "Times New Roman", Georgia, serif;
-    font-size: 16pt;
-    line-height: var(--baseline);
-    margin-top: calc(var(--baseline) * 2);
-    margin-bottom: calc(var(--baseline) * 2);
-  }
-
-  /* Subtítulo interno da matéria – segue na coluna */
-  .page h2 {
-    font-family: "Times New Roman", Georgia, serif;
-    font-size: 11pt;
-    font-weight: bold;
-    line-height: var(--baseline);
-    margin-top: calc(var(--baseline) * 1);
-    margin-bottom: calc(var(--baseline) * 1);
-
-    break-inside: avoid-column;
-    page-break-inside: avoid;
-  }
-</style>
-</head>
-<body>
-  <div class="page">
-    <h1>Manchete do Jornal</h1>
-
-    <p>Primeiro parágrafo da matéria, alinhado na grade de linhas. O objetivo é que, ao final, as cinco colunas tenham alturas semelhantes, criando o efeito clássico de jornal impresso.</p>
-    <p>A partir de certo ponto, o navegador faz o balanceamento vertical do conteúdo entre as colunas, desde que a quantidade de texto caiba dentro da altura definida da página.</p>
-
-    <h2>Subtítulo interno da matéria</h2>
-    <p>Este subtítulo faz parte da mesma matéria e continua dentro da mesma coluna, sem ocupar o espaço de todas as colunas. As margens do h2 respeitam a mesma unidade de baseline, para que o alinhamento entre colunas seja preservado.</p>
-    <p>Se você notar que ainda existe algum desbalanceamento, geralmente é questão de ajustar um pouco o tamanho do texto (tirar ou incluir um parágrafo) para “encaixar” no espelho, como se faz na diagramação tradicional.</p>
-  </div>
-</body>
-</html>
+}
