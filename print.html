@@ -10,6 +10,7 @@
     --baseline: 4mm;
   }
 
+  /* Tamanho físico da página da gráfica */
   @page {
     size: 280mm 430mm;
     margin: 10mm;
@@ -32,15 +33,16 @@
 
     .page {
       background: #fff;
-      width: 260mm;   /* 280 - 2x10mm */
-      height: 410mm;  /* 430 - 2x10mm */
+      width: 260mm;    /* 280 - 2x10mm */
+      height: 410mm;   /* 430 - 2x10mm */
       box-shadow: 0 0 12px rgba(0,0,0,0.4);
       padding: 10mm;
       box-sizing: border-box;
 
       column-count: 5;
       column-gap: 5mm;
-      column-fill: auto;
+      column-fill: balance;   /* <- tentar distribuir igualmente */
+      overflow: hidden;       /* garante "uma página" visual */
     }
   }
 
@@ -54,16 +56,17 @@
 
     .page {
       width: 100%;
-      height: auto;
-      padding: 0;
-      box-shadow: none;
+      height: 410mm;          /* mesma altura da tela para manter proporção */
+      padding: 10mm;
       box-sizing: border-box;
+      box-shadow: none;
 
       column-count: 5;
       column-gap: 5mm;
-      column-fill: auto;
+      column-fill: balance;   /* <- tenta equilibrar as colunas também no print */
 
       page-break-after: always;
+      overflow: hidden;       /* se passar disso, corta (como se "não coubesse na página") */
     }
   }
 
@@ -72,13 +75,13 @@
     margin: 0 0 var(--baseline);
     font-family: "Times New Roman", Georgia, serif;
     font-size: 9pt;
-    line-height: var(--baseline);  /* mantém todas as linhas na grade */
+    line-height: var(--baseline);  /* todas as linhas na mesma grade */
     text-align: justify;
     hyphens: auto;
     -webkit-hyphens: auto;
   }
 
-  /* Manchete geral – ainda ocupa todas as colunas */
+  /* Manchete geral – ocupa todas as colunas */
   .page h1 {
     column-span: all;
     font-family: "Times New Roman", Georgia, serif;
@@ -88,9 +91,8 @@
     margin-bottom: calc(var(--baseline) * 2);
   }
 
-  /* Subtítulo interno da matéria (segue dentro da coluna) */
+  /* Subtítulo interno da matéria – segue na coluna */
   .page h2 {
-    /* NÃO tem column-span */
     font-family: "Times New Roman", Georgia, serif;
     font-size: 11pt;
     font-weight: bold;
@@ -98,7 +100,6 @@
     margin-top: calc(var(--baseline) * 1);
     margin-bottom: calc(var(--baseline) * 1);
 
-    /* Evita quebrar o subtítulo no meio de uma coluna */
     break-inside: avoid-column;
     page-break-inside: avoid;
   }
@@ -108,26 +109,12 @@
   <div class="page">
     <h1>Manchete do Jornal</h1>
 
-    <p>Primeiro parágrafo da matéria, alinhado na grade de linhas que será seguida em todas as colunas...</p>
-    <p>Segundo parágrafo, ainda antes do subtítulo interno. O texto segue normalmente, ocupando a mesma coluna até atingir o limite e fluir para a próxima.</p>
-    <p>Segundo parágrafo, ainda antes do subtítulo interno. O texto segue normalmente, ocupando a mesma coluna até atingir o limite e fluir para a próxima.</p>
-    <p>Segundo parágrafo, ainda antes do subtítulo interno. O texto segue normalmente, ocupando a mesma coluna até atingir o limite e fluir para a próxima.</p>
-    <p>Segundo parágrafo, ainda antes do subtítulo interno. O texto segue normalmente, ocupando a mesma coluna até atingir o limite e fluir para a próxima.</p>
-    <p>Segundo parágrafo, ainda antes do subtítulo interno. O texto segue normalmente, ocupando a mesma coluna até atingir o limite e fluir para a próxima.</p>
-    <p>Segundo parágrafo, ainda antes do subtítulo interno. O texto segue normalmente, ocupando a mesma coluna até atingir o limite e fluir para a próxima.</p>
+    <p>Primeiro parágrafo da matéria, alinhado na grade de linhas. O objetivo é que, ao final, as cinco colunas tenham alturas semelhantes, criando o efeito clássico de jornal impresso.</p>
+    <p>A partir de certo ponto, o navegador faz o balanceamento vertical do conteúdo entre as colunas, desde que a quantidade de texto caiba dentro da altura definida da página.</p>
 
     <h2>Subtítulo interno da matéria</h2>
-    <p>Esse parágrafo já vem logo na sequência do subtítulo, dentro da mesma coluna. As outras colunas permanecem com as linhas alinhadas porque o h2 respeita a mesma line-height e margens em múltiplos da baseline.</p>
-    <p>Com fonte menor, hifenização e grid de linhas, você reduz os buracos do justify e ganha um visual bem próximo de um jornal diagramado na mão.</p>
-    <p>Segundo parágrafo, ainda antes do subtítulo interno. O texto segue normalmente, ocupando a mesma coluna até atingir o limite e fluir para a próxima.</p>
-    <p>Segundo parágrafo, ainda antes do subtítulo interno. O texto segue normalmente, ocupando a mesma coluna até atingir o limite e fluir para a próxima.</p>
-    <p>Segundo parágrafo, ainda antes do subtítulo interno. O texto segue normalmente, ocupando a mesma coluna até atingir o limite e fluir para a próxima.</p>
-    <p>Segundo parágrafo, ainda antes do subtítulo interno. O texto segue normalmente, ocupando a mesma coluna até atingir o limite e fluir para a próxima.</p>
-    <p>Segundo parágrafo, ainda antes do subtítulo interno. O texto segue normalmente, ocupando a mesma coluna até atingir o limite e fluir para a próxima.</p>
-    <p>Segundo parágrafo, ainda antes do subtítulo interno. O texto segue normalmente, ocupando a mesma coluna até atingir o limite e fluir para a próxima.</p>
-    <p>Segundo parágrafo, ainda antes do subtítulo interno. O texto segue normalmente, ocupando a mesma coluna até atingir o limite e fluir para a próxima.</p>
-    <p>Segundo parágrafo, ainda antes do subtítulo interno. O texto segue normalmente, ocupando a mesma coluna até atingir o limite e fluir para a próxima.</p>
-    <p>Segundo parágrafo, ainda antes do subtítulo interno. O texto segue normalmente, ocupando a mesma coluna até atingir o limite e fluir para a próxima.</p>
+    <p>Este subtítulo faz parte da mesma matéria e continua dentro da mesma coluna, sem ocupar o espaço de todas as colunas. As margens do h2 respeitam a mesma unidade de baseline, para que o alinhamento entre colunas seja preservado.</p>
+    <p>Se você notar que ainda existe algum desbalanceamento, geralmente é questão de ajustar um pouco o tamanho do texto (tirar ou incluir um parágrafo) para “encaixar” no espelho, como se faz na diagramação tradicional.</p>
   </div>
 </body>
 </html>
