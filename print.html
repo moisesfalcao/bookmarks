@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Jornal 5 colunas</title>
+<style>
+  /* Tamanho físico do papel A4 para manter proporção */
+  @page {
+    size: A4 portrait;
+    margin: 10mm;
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Visualização na tela */
+  @media screen {
+    body {
+      background: #e0e0e0;
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .page {
+      background: white;
+      width: 190mm;   /* 210mm - margens do @page aproximadas */
+      height: 277mm;  /* 297mm - margens do @page aproximadas */
+      box-shadow: 0 0 10px rgba(0,0,0,.4);
+      padding: 10mm;
+      box-sizing: border-box;
+
+      column-count: 5;
+      column-gap: 4mm;
+    }
+  }
+
+  /* Layout de impressão */
+  @media print {
+    body {
+      margin: 0;
+      padding: 0;
+      background: none;
+    }
+
+    .page {
+      width: 100%;
+      height: auto;
+      padding: 0;
+      box-shadow: none;
+      box-sizing: border-box;
+
+      column-count: 5;
+      column-gap: 4mm;
+
+      page-break-after: always;
+    }
+  }
+
+  /* Estilo básico de texto */
+  .page p {
+    margin: 0 0 4mm;
+    font-family: "Times New Roman", Georgia, serif;
+    font-size: 11pt;
+    line-height: 1.3;
+    text-align: justify;
+  }
+
+  .page h1, .page h2 {
+    column-span: all;
+    font-family: "Times New Roman", Georgia, serif;
+    margin: 0 0 4mm;
+  }
+
+  .page h1 {
+    font-size: 18pt;
+  }
+
+  .page h2 {
+    font-size: 14pt;
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+    <h1>Título principal do jornal</h1>
+    <h2>Subtítulo / linha fina</h2>
+    <p>Seu texto de jornal vai aqui, e quanto mais texto, mais ele serpenteia pelas 5 colunas, como num jornal impresso...</p>
+    <!-- repita mais <p>...</p> -->
+  </div>
+</body>
+</html>
