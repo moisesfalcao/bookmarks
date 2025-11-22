@@ -5,8 +5,8 @@
 <title>Voz do Leitor - JC</title>
 <style>
   :root {
-    --baseline: 4mm;
-    --gutter: 4mm;
+    --baseline: 5mm;
+    --gutter: 5mm;
   }
 
   /* Tamanho físico da página – 28 x 43 cm */
@@ -98,7 +98,7 @@
     grid-column: 5 / 6;
     grid-row: 6 / 20;
     font-size: 12.5pt;
-    line-height: var(--baseline);
+    line-height:1.5;
   }
 
   .sidebar .rotulo {
@@ -113,7 +113,7 @@
   /* TÍTULO PRINCIPAL - ocupa colunas 2 a 5 */
   .titulo {
     grid-column: 1 / 6;
-    grid-row: 3 / 40;
+    grid-row: 3 / 6;
     font-size: 36pt;
     line-height: 1.1;
     margin: 0;
@@ -122,7 +122,7 @@
   /* FOTO GRANDE CENTRAL (tipo radar) */
   .foto {
     grid-column: 1 / 5;
-    grid-row: 6 / 40;
+    grid-row: 6 / 28;
     margin: 0;
   }
 
@@ -140,7 +140,7 @@
   /* TEXTO PRINCIPAL DA COLUNA (acima da dobra) */
   .texto-principal {
     grid-column: 1 / 6;
-    grid-row: 13 / 40;
+    grid-row: 28 / 60;
     font-size: 9pt;
     line-height: var(--baseline);
     text-align: justify;
