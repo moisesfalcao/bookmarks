@@ -26,7 +26,7 @@
     proxy: "https://spring-river-efc5.nlakedeveloper.workers.dev/",
     proxyReferer: "https://jc.com.br",
     // ✅ seu CSS externo
-    CSS_URL: "https://moisesfalcao.github.io/bookmarks/jc-card-modelo1.css"
+    CSS_URL: "https://moisesfalcao.github.io/bookmarks/social1-card-modelo1.css"
   };
 
   // evita duplicar
