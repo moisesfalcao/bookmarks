@@ -1,6 +1,6 @@
 (function () {
   const CONFIG = {
-    selectors: { title: ".article-title", excerpt: ".article-subtitle" },
+    selectors: { title: ".article-title", excerpt: ".featured-image figcaption" },
     card: {
       width: 1200,
       heightByAspect: { "1:1": 1200, "4:5": 1500 },
