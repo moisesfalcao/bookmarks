@@ -359,7 +359,7 @@
     document.getElementById("ig-fg-posy").oninput = (e) => { fgOffsetY = parseInt(e.target.value || "0", 10); applyFgTransform(); };
     document.getElementById("ig-btn-toggle-excerpt").onclick = () => {
       const willReplace = !excerptsHidden;
-      if (willReplace) { if (!pExcerpt.dataset.igOriginal) pExcerpt.dataset.igOriginal = pExcerpt.innerHTML; pExcerpt.innerHTML = "jc.com.br"; }
+      if (willReplace) { if (!pExcerpt.dataset.igOriginal) pExcerpt.dataset.igOriginal = pExcerpt.innerHTML; pExcerpt.innerHTML = "social1.com.br/"; }
       else { if (pExcerpt.dataset.igOriginal != null) pExcerpt.innerHTML = pExcerpt.dataset.igOriginal; }
       excerptsHidden = !excerptsHidden;
       document.getElementById("ig-btn-toggle-excerpt").textContent = excerptsHidden ? "🪄 Mostrar resumo" : "🪄 Ocultar resumo";
