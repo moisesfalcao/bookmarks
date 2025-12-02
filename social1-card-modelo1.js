@@ -10,7 +10,7 @@
       backgroundColor: "#000000",
     },
     brand: {
-      iconUrl: "https://sjcc.ne10.uol.com.br/rodape_global/img/social.webp",
+      iconUrl: "https://imagens.ne10.uol.com.br/template-unificado/images/social1/favicon/ms-icon-144x144.png,
       text: " ",
       textColor: "#fff",
       iconSize: 130,
