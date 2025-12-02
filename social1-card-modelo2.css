@@ -1,0 +1,88 @@
+:root{
+  --panel-bg:#0b0b2a;
+  --panel-fg:#fff;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:#0b0b2a;color:#fff;font-family:'Poppins',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif}
+
+/* Layout */
+.ig-wrap{display:flex;align-items:center;justify-content:center;gap:24px;width:100%;height:100%}
+
+#ig-card{
+  position:relative;
+  width:1200px;             /* largura fixa do card */
+  height:1500px;            /* 4:5 padrão (JS alterna para 1:1 se desejar) */
+  background:#000;
+  overflow:hidden;
+}
+
+/* Fundo blur (cover) */
+#ig-bg-blur{
+  position:absolute; inset:0;
+  transform: scale(1.06);   /* esconde bordas após o blur */
+  z-index:1;
+}
+
+/* Imagem principal (contain), dentro de overflow hidden */
+#ig-fg-wrap{
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  overflow:hidden; z-index:2;
+}
+#ig-fg-img{
+  max-width:100%; max-height:100%;
+  width:auto; height:auto; object-fit:contain;
+  transform-origin:50% 50%;
+  will-change:transform;
+}
+
+/* Camada de conteúdo */
+#ig-stack{ position:absolute; inset:0; display:flex; flex-direction:column; justify-content:space-between; z-index:3; }
+
+/* Brand no topo esquerdo */
+#ig-brand{ display:flex; align-items:center; color:#fff; justify-content: flex-end; }
+#ig-brand img{
+  width:130px; height:130px; object-fit:cover; border-radius:8px; display:block;
+  filter:drop-shadow(0 1px 2px rgba(0,0,0,.4)); margin:5rem; /* topo/esquerda */
+}
+#ig-brand span{
+  font-weight:700; font-size:20px; letter-spacing:.2px; text-shadow:0 1px 2px rgba(0,0,0,.4);
+}
+
+/* Header + gradiente */
+#ig-header{
+  position:absolute; left:0; right:0; bottom:0;
+  padding:10rem 5rem 5rem;
+  background:linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 100%);
+  color:#fff;
+}
+#ig-header .title{ margin:0; font-weight:700; color:#fff }
+
+/* ✅ Resumo com borda vermelha à esquerda */
+#ig-header .excerpt{
+  margin:0; color:#fff;
+  border-left:6px solid #e60382;
+  padding-left:1rem;
+}
+
+/* Painel (UI) */
+#ig-panel{
+  position:fixed; top:16px; right:16px;
+  display:flex; flex-direction:column; gap:10px; width:260px;
+  background:var(--panel-bg); color:var(--panel-fg);
+  border-radius:10px; padding:12px; box-shadow:0 6px 18px rgba(0,0,0,.35);
+  z-index:9999; font-size:1.6rem;
+}
+#ig-panel button{
+  padding:8px 10px; border-radius:8px; border:1px solid #3d3d7a; background:#1a1a4a; color:#fff; cursor:pointer; font-size:14px; font-weight:600;
+}
+#ig-panel .row{display:flex;align-items:center;gap:8px;justify-content:space-between}
+#ig-panel .grid2{display:grid;grid-template-columns:1fr auto;gap:8px;width:100%}
+#ig-panel input[type="range"]{width:100%}
+hr{border:none;border-top:1px solid #2a2a5a;margin:6px 0}
+
+/* Botão fechar */
+#ig-close{
+  position:fixed; top:16px; left:16px;
+  background:#1a1a4a; color:#fff; border:1px solid #3d3d7a; border-radius:8px; padding:8px 10px; cursor:pointer; font-weight:700; z-index:9999;
+}
