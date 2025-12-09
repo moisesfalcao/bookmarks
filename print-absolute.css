@@ -1,0 +1,410 @@
+:root {
+    --baseline: 6mm;
+    --gutter: 6mm;
+  }
+
+  /* Tamanho físico da página – 28 x 43 cm */
+  @page {
+    size: 279mm 432mm;
+    overflow: hidden;
+  }
+
+
+  html, body {
+    margin: 0;
+    padding: 0;
+  }
+
+  /* ESPELHO DA PÁGINA (5 colunas fixas) */
+  .page {
+    width: 279mm;   /* 280 - 2x10mm */
+    height: 432mm;  /* 430 - 2x10mm */
+    margin: 0 5MM;
+    box-sizing: border-box;
+    background: #fff;
+    position: relative ;
+    font-family: "Roboto Slab", serif;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(50, 1fr);
+    grid-auto-rows: minmax(var(--baseline), auto);
+    column-gap: var(--gutter);
+    row-gap: var(--baseline);
+    page-break-after: always;
+  }
+
+  /* PRÉVIA NA TELA */
+  @media screen {
+    body {
+      background: #ccc;
+      display: flex;
+      justify-content: flex-start;
+      padding: 20px;
+      box-sizing: border-box;
+      flex-wrap: wrap;
+    align-items: flex-start;
+    }
+    .page {
+      box-shadow: 0 0 12px rgba(0,0,0,.4);
+      margin: 2rem;
+    }
+  }
+
+
+
+  /* CABEÇALHO SUPERIOR (nome da editoria + data/página) */
+  .page-head {
+    width: 259mm;
+    height: 12mm;
+    margin: 0;
+    overflow: hidden;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: absolute;
+    top: 8mm;
+    left: 10mm;
+  }
+
+  .page-head .editoria {
+    font-weight: bold;
+    color: #004f9f;
+    font-size: 22pt;
+  }
+
+  .page-head .info-edicao {
+    font-size: 8pt;
+  }
+
+  /* FILETE CINZA LOGO ABAIXO DO CABEÇALHO */
+  .barra-cinza {
+    display: block;
+    border-top: 3px solid #e0e0e0;
+    position: absolute;
+    top: 24mm;
+    left: 10mm;
+    width: 259mm;
+  }
+
+  /* SIDEBAR ESQUERDA (FISCALIZAÇÃO + chamada) */
+  .sidebar {
+    font-size: 14pt;
+    line-height:1.5;
+    position: absolute;
+    top: 66mm;
+    left: 222mm;
+    width: 43mm;
+  }
+
+  .sidebar .rotulo {
+    font-weight: 900;
+  }
+
+  .sidebar .chamada {
+    color: #004f9f;
+    margin: 0;
+  }
+
+  /* TÍTULO PRINCIPAL - ocupa colunas 2 a 5 */
+  .titulo {
+    font-size: 44pt;
+    line-height: 1.1;
+    margin: 0;
+    position: absolute;
+    top: 27mm;
+    left: 10mm;
+  }
+
+  /* FOTO GRANDE CENTRAL (tipo radar) */
+  .foto {
+    margin: 0;
+    position: absolute;
+    top: 65mm;
+    height: 155mm;
+    width: 207mm;
+    overflow: hidden;
+    left: 10mm;
+  }
+
+  .foto img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .foto figcaption {
+    font-size: 7.5pt;
+    margin-top: 2mm;
+  }
+
+  /* TEXTO PRINCIPAL DA COLUNA (acima da dobra) */
+  .texto-principal {
+    font-size: 14pt;
+    line-height: var(--baseline);
+
+    hyphens: auto;
+    -webkit-hyphens: auto;
+    position: absolute;
+    top: 210mm;
+    left: 10mm;
+    width: 259mm;
+    height: 204mm;
+    overflow: hidden;
+    padding-top: calc(var(--baseline)  );
+    border-top: 1mm solid #004f9f;
+    column-gap: var(--gutter);
+    column-count:5;
+  }
+  .texto-principal::first-letter {
+    font-size: 4rem;
+    float: left;
+    font-weight: 900;
+    color: #004f9f;
+    line-height: 1;
+    margin-right: 1mm;
+    margin-top: -0.2rem;
+    margin-bottom: -0.3rem;
+  }
+
+  .texto-principal p {
+    margin: 0 0 var(--baseline);
+  }
+
+  .texto-principal h2 {
+    font-size: 16pt;
+    color: #004f9f;
+    font-weight: bold;
+    margin: calc(var(--baseline) * 1) 0 var(--baseline) 0;
+    break-inside: avoid-column;
+  }
+
+  .assinatura {
+    font-weight: bold;
+    font-size: 8.5pt;
+  }
+
+
+    /* IMPRESSÃO */
+  @media print {
+    body {
+      margin: 0;
+      padding: 0;
+      background: none;
+    }
+    .page {
+      height: auto;
+      box-shadow: none;
+      margin: 0;
+    }
+
+    
+  }
+
+  /* MODEL 2 */
+    .page.modelo2 .titulo{font-size: 2.4rem; } 
+    .page.modelo2 .foto {
+        margin: 0;
+        position: absolute;
+        top: 42mm;
+        height: 135mm;
+        width: 100mm;
+        overflow: hidden;
+        left: 10mm;
+    }
+    .page.modelo2 .sidebar {
+        top: 54mm;
+        left: 116mm;
+        width: 153mm;
+    }
+    .page.modelo2 .sidebar .chamada{
+       font-size: 18pt;
+    }
+    .page.modelo2 .texto-principal {
+        top: 120mm;
+        left: 10mm;
+        width: 259mm;
+        height: 78mm;
+    }
+
+
+      /* MODEL 3 */
+    .page.modelo3 .titulo{
+        font-size: 2.4rem;
+        width: 154mm;
+    } 
+    .page.modelo3 .foto {
+        margin: 0;
+        position: absolute;
+        top: 52mm;
+        height: 135mm;
+        width: 153mm;
+        overflow: hidden;
+        left: 10mm;
+    }
+    .page.modelo3 .sidebar {
+        top: 165mm;
+        left: 10mm;
+        width: 153mm;
+    }
+    .page.modelo3 .texto-principal {
+        top: 203mm;
+        left: 10mm;
+        width: 154mm;
+        height: 211mm;
+        column-count: 3;
+        
+    }
+
+    
+
+
+
+
+    /* MODEL 4 */
+    .page.modelo4 .titulo{
+        font-size: 2.4rem; 
+        left: 10mm;
+        width: 253mm;
+    } 
+    .page.modelo4 .foto {
+        margin: 0;
+        position: absolute;
+        top: 57mm;
+        width: 153mm;
+        height: 113mm;
+        overflow: hidden;
+        left: 10mm;
+
+    }
+    .page.modelo4 .sidebar {
+        top: 170mm;
+        left: 10mm;
+        width: 153mm;
+    }
+    .page.modelo4 .sidebar .chamada{
+       font-size: 18pt;
+    }
+    .page.modelo4 .texto-principal {
+        top: 57mm;
+        left: 169mm;
+        width: 100mm;
+        height: 148mm;
+        columns: 2;
+    }
+
+
+
+    /* MODEL 5 */
+    .page.modelo5 .titulo{
+        font-size: 3.4rem; 
+        left: 10mm;
+        width: 253mm;
+    } 
+    .page.modelo5 .foto {
+        margin: 0;
+        position: absolute;
+        top: 80mm;
+        width: 153mm;
+        height: 393mm;
+        overflow: hidden;
+        left: 10mm;
+
+    }
+    .page.modelo5 .foto figcaption {
+        margin-bottom: 10mm;
+    }
+    .page.modelo5 .sidebar {
+        top: 86mm;
+        left: 169mm;
+        width: 100mm;
+    }
+    .page.modelo5 .sidebar .chamada{
+       font-size: 18pt;
+    }
+    .page.modelo5 .texto-principal {
+        top: 145mm;
+        left: 169mm;
+        width: 100mm;
+        height: 268mm;
+        columns: 2;
+    }
+
+
+
+
+    /* MODEL 6 */
+    .page.modelo6 .titulo{
+        font-size: 5.0rem; 
+        left: 10mm;
+        width: 259mm;
+        top: 30mm;
+    } 
+    .page.modelo6 .foto {
+        margin: 0;
+        position: absolute;
+        top: 197mm;
+        width: 153mm;
+        height: 230mm;
+        overflow: hidden;
+        left: 10mm;
+      
+
+    }
+    .page.modelo6 .foto figcaption {
+        margin-bottom: 10mm;
+    }
+    .page.modelo6 .sidebar {
+        top: 132mm;
+        left: 10mm;
+        width: 259mm;
+        font-size: 18pt;
+    }
+    .page.modelo6 .sidebar .chamada{
+       font-size: 25pt;
+    }
+    .page.modelo6 .texto-principal {
+        top: 197mm;
+        left: 169mm;
+        width: 100mm;
+        height: 216mm;
+        columns: 2;
+
+    }
+    
+
+
+
+
+
+
+     /* ANUNCIOS */
+     .page .anuncio.meia {
+        position: absolute;
+        top: 214mm;
+        left: 10mm;
+        width: 259mm;
+        height: 195mm;
+        background-color: #004f9f;
+    }
+    .page .anuncio.meia img{
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+
+
+
+    .page .anuncio.duas-colunas {
+        position: absolute;
+        top: 24mm;
+        left: 169mm;
+        width: 100mm;
+        height: 396mm;
+        background-color: #004f9f;
+    }
+    .page .anuncio.duas-colunas img{
+        width: 100mm;
+        height: 396mm;
+        display: block;
+    }
+
