@@ -1,381 +1,184 @@
-:root {
-    --baseline: 6mm;
-    --gutter: 6mm;
-  }
+:root { --baseline: 6mm; --gutter: 6mm; }
 
-  /* Tamanho físico da página – 28 x 43 cm */
-  @page {
-    size: 279mm 432mm;
-    overflow: hidden;
-  }
+@page { size: 279mm 432mm; overflow: hidden; }
 
+html, body { margin: 0; padding: 0; }
 
-  html, body {
-    margin: 0;
-    padding: 0;
-  }
+  /* page emulating */
+  .page { width: 279mm;   height: 432mm;  margin: 0 5MM; box-sizing: border-box; background: #fff; position: relative ; font-family: "Roboto Slab", serif; display: grid; grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(50, 1fr); grid-auto-rows: minmax(var(--baseline), auto); column-gap: var(--gutter); row-gap: var(--baseline); page-break-after: always; }
 
-  /* ESPELHO DA PÁGINA (5 colunas fixas) */
-  .page {
-    width: 279mm;   /* 280 - 2x10mm */
-    height: 432mm;  /* 430 - 2x10mm */
-    margin: 0 5MM;
-    box-sizing: border-box;
-    background: #fff;
-    position: relative ;
-    font-family: "Roboto Slab", serif;
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    grid-template-rows: repeat(50, 1fr);
-    grid-auto-rows: minmax(var(--baseline), auto);
-    column-gap: var(--gutter);
-    row-gap: var(--baseline);
-    page-break-after: always;
-  }
-
-  /* PRÉVIA NA TELA */
+  /* scree preview */
   @media screen {
-    body {
-      background: #ccc;
-      display: flex;
-      justify-content: flex-start;
-      padding: 20px;
-      box-sizing: border-box;
-      flex-wrap: wrap;
-    align-items: flex-start;
-    }
-    .page {
-      box-shadow: 0 0 12px rgba(0,0,0,.4);
-      margin: 2rem;
-    }
+    body { background: #ccc; display: flex; justify-content: flex-start; padding: 20px; box-sizing: border-box; flex-wrap: wrap; align-items: flex-start; }
+    .page { box-shadow: 0 0 12px rgba(0,0,0,.4); margin: 2rem; }
   }
 
+  /* page header */
+  .page-head { width: 259mm; height: 12mm; margin: 0; overflow: hidden; display: flex; justify-content: space-between; align-items: center; position: absolute; top: 8mm; left: 10mm;}
+  
+  
+  
+  
+  .page-head .editoria , .page-head .page-category  { font-weight: bold; color: #004f9f; font-size: 22pt;}
+  .page-head .info-edicao, .page-head .page-date { font-size: 8pt; }
+  .barra-cinza, .header-bar { display: block; border-top: 3px solid #e0e0e0; position: absolute; top: 24mm; left: 10mm; width: 259mm; }
 
 
-  /* CABEÇALHO SUPERIOR (nome da editoria + data/página) */
-  .page-head {
-    width: 259mm;
-    height: 12mm;
-    margin: 0;
-    overflow: hidden;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: absolute;
-    top: 8mm;
-    left: 10mm;
-  }
+  /* TEMPLATE 1 (default) */
+  .sidebar, .page article.news .overview { font-size: 14pt; line-height:1.5; position: absolute; top: 66mm; left: 222mm; width: 43mm; }
+  .sidebar .rotulo, .page article.news .overview .tag { font-weight: 900; }
+  .sidebar .chamada, .page article.news .overview p { color: #004f9f; margin: 0;}
+  .page article.news h1{ font-size: 44pt; line-height: 1.1; margin: 0; position: absolute; top: 27mm; left: 10mm;}
+  .page article.news .content .author { font-size: 12pt; font-weight: bold; color: #004f9f; margin: 0 0 2mm; display: flex; align-items: center; padding-bottom: 3mm; border-bottom: 1mm dotted #ccc; }
+  .page article.news .content .author figure{   position:static; width: 13mm; height: 13mm; margin: 0 3mm 0 0; padding: 0; }
+  .page article.news .content .author figure img{ width: 13mm;height: 13mm;border-radius: 10mm; }
+  .page article.news .content .author dl, 
+  .page article.news .content .author dt,
+  .page article.news .content .author dd{ margin: 0; padding: 0; font-size: 10pt; line-height: 1;}
+  .page article.news figure.featured { margin: 0; position: absolute; top: 65mm; height: 155mm; width: 207mm; overflow: hidden; left: 10mm; }
+  .page article.news figure img { width: 100%; height: auto; display: block; }
+  .page article.news figure figcaption { font-size: 7.5pt; margin-top: 2mm; }
+  .page article.news .content { font-size: 4mm; line-height: var(--baseline); font-weight: 400; hyphens: auto; webkit-hyphens: auto; position: absolute; top: 210mm; left: 10mm; width: 259mm; height: 204mm; overflow: hidden; padding-top: calc(var(--baseline)  ); border-top: 1mm solid #004f9f; column-gap: var(--gutter); column-count:5; }
+  .page article.news .entry-content p:nth-of-type(1)::first-letter {  font-size: 4rem; float: left; font-weight: 900; color: #004f9f; line-height: 1; margin-right: 1mm; margin-top: -0.2rem; margin-bottom: -0.3rem;}
+  .page article.news .content p { margin: 0 0 var(--baseline); }
+  .page article.news .content h2 { font-size: 16pt; color: #004f9f; font-weight: bold; margin: calc(var(--baseline) * 1) 0 var(--baseline) 0; break-inside: avoid-column; }
 
-  .page-head .editoria {
-    font-weight: bold;
-    color: #004f9f;
-    font-size: 22pt;
-  }
+    /* TEMPLATE 2 */
+    .page.template2 article.news h1{font-size: 2.4rem; } 
+    .page.template2 article.news figure.featured { margin: 0; position: absolute; top: 42mm; height: 135mm; width: 100mm; overflow: hidden;  left: 10mm; }
+    .page.template2 article.news .overview { top: 54mm; left: 116mm; width: 153mm;}
+    .page.template2 article.news .overview p { font-size: 18pt; }
+    .page.template2 article.news .content { top: 120mm; left: 10mm; width: 259mm; height: 78mm; }
 
-  .page-head .info-edicao {
-    font-size: 8pt;
-  }
+    /* TEMPLATE 3 */
+    .page.template3 article.news h1{ font-size: 2.4rem; width: 154mm; } 
+    .page.template3 article.news figure.featured { margin: 0; position: absolute; top: 52mm; height: 135mm; width: 153mm; overflow: hidden; left: 10mm; }
+    .page.template3 article.news .overview { top: 165mm; left: 10mm; width: 153mm; }
+    .page.template3 article.news .content { top: 203mm; left: 10mm; width: 154mm; height: 211mm; column-count: 3; }
 
-  /* FILETE CINZA LOGO ABAIXO DO CABEÇALHO */
-  .barra-cinza {
-    display: block;
-    border-top: 3px solid #e0e0e0;
-    position: absolute;
-    top: 24mm;
-    left: 10mm;
-    width: 259mm;
-  }
+    /* TEMPLATE 4 */
+    .page.template4 article.news h1{ font-size: 2.8rem;  left: 10mm; width: 253mm;} 
+    .page.template4 article.news figure.featured { margin: 0; position: absolute; top: 57mm; width: 153mm; height: 113mm; overflow: hidden; left: 10mm;}
+    .page.template4 article.news .overview { top: 170mm; left: 10mm; width: 153mm; }
+    .page.template4 article.news .overview p { font-size: 18pt; }
+    .page.template4 article.news .content { top: 57mm; left: 169mm; width: 100mm; height: 148mm; columns: 2;}
 
-  /* SIDEBAR ESQUERDA (FISCALIZAÇÃO + chamada) */
-  .sidebar {
-    font-size: 14pt;
-    line-height:1.5;
-    position: absolute;
-    top: 66mm;
-    left: 222mm;
-    width: 43mm;
-  }
+    /* TEMPLATE 5 */
+    .page.template5 article.news h1{font-size: 3.4rem; left: 10mm;width: 253mm; } 
+    .page.template5 article.news figure.featured {margin: 0; position: absolute; top: 80mm; width: 153mm; height: 393mm; overflow: hidden; left: 10mm; }
+    .page.template5 article.news figure.featured figcaption {  margin-bottom: 10mm; }
+    .page.template5 article.news .overview { top: 86mm; left: 169mm; width: 100mm; }
+    .page.template5 article.news .overview p { font-size: 18pt; }
+    .page.template5 article.news .content { top: 145mm; left: 169mm; width: 100mm; height: 268mm; columns: 2; }
 
-  .sidebar .rotulo {
-    font-weight: 900;
-  }
-
-  .sidebar .chamada {
-    color: #004f9f;
-    margin: 0;
-  }
-
-  /* TÍTULO PRINCIPAL - ocupa colunas 2 a 5 */
-  .titulo {
-    font-size: 44pt;
-    line-height: 1.1;
-    margin: 0;
-    position: absolute;
-    top: 27mm;
-    left: 10mm;
-  }
-
-  /* FOTO GRANDE CENTRAL (tipo radar) */
-  .foto {
-    margin: 0;
-    position: absolute;
-    top: 65mm;
-    height: 155mm;
-    width: 207mm;
-    overflow: hidden;
-    left: 10mm;
-  }
-
-  .foto img {
-    width: 100%;
-    height: auto;
-    display: block;
-  }
-
-  .foto figcaption {
-    font-size: 7.5pt;
-    margin-top: 2mm;
-  }
-
-  /* TEXTO PRINCIPAL DA COLUNA (acima da dobra) */
-  .texto-principal {
-    font-size: 14pt;
-    line-height: var(--baseline);
-
-    hyphens: auto;
-    -webkit-hyphens: auto;
-    position: absolute;
-    top: 210mm;
-    left: 10mm;
-    width: 259mm;
-    height: 204mm;
-    overflow: hidden;
-    padding-top: calc(var(--baseline)  );
-    border-top: 1mm solid #004f9f;
-    column-gap: var(--gutter);
-    column-count:5;
-  }
-  .texto-principal::first-letter {
-    font-size: 4rem;
-    float: left;
-    font-weight: 900;
-    color: #004f9f;
-    line-height: 1;
-    margin-right: 1mm;
-    margin-top: -0.2rem;
-    margin-bottom: -0.3rem;
-  }
-
-  .texto-principal p {
-    margin: 0 0 var(--baseline);
-  }
-
-  .texto-principal h2 {
-    font-size: 16pt;
-    color: #004f9f;
-    font-weight: bold;
-    margin: calc(var(--baseline) * 1) 0 var(--baseline) 0;
-    break-inside: avoid-column;
-  }
-
-  .assinatura {
-    font-weight: bold;
-    font-size: 8.5pt;
-  }
+    /* TEMPLATE 6 */
+    .page.template6 .titulo, .page.template6 article.news h1{ font-size: 5.0rem;  left: 10mm; width: 259mm; top: 30mm; } 
+    .page.template6 article.news figure.featured { margin: 0; position: absolute; top: 197mm; width: 153mm; height: 230mm; overflow: hidden; left: 10mm;}
+    .page.template6 article.news figure figcaption { margin-bottom: 10mm; }
+    .page.template6 article.news .overview { top: 132mm; left: 10mm; width: 259mm; font-size: 18pt; }
+    .page.template6 article.news .overview p { font-size: 25pt; }
+    .page.template6 article.news .content { top: 197mm; left: 169mm; width: 100mm; height: 216mm; columns: 2; }
 
 
-    /* IMPRESSÃO */
-  @media print {
-    body {
-      margin: 0;
-      padding: 0;
-      background: none;
-    }
-    .page {
-      height: auto;
-      box-shadow: none;
-      margin: 0;
-    }
 
-    
-  }
+      /* TEMPLATE 7 */
+    .page.template7 article.news h1{ font-size: 2.4rem; width: 154mm; } 
+    .page.template7 article.news figure.featured { margin: 0; position: absolute; top: 52mm; height: 135mm; width: 153mm; overflow: hidden; left: 10mm; }
+    .page.template7 article.news .overview { top: 165mm; left: 10mm; width: 153mm; }
+    .page.template7 article.news .content { top: 203mm; left: 10mm; width: 154mm; height: 511mm; column-count: 3; overflow: hidden; }
 
-  /* MODEL 2 */
-    .page.modelo2 .titulo{font-size: 2.4rem; } 
-    .page.modelo2 .foto {
-        margin: 0;
+
+
+
+    .page.template6 article.opinion h2{ font-size: 5.0rem;  left: 10mm; width: 259mm; top: 30mm; } 
+    .page.template6 article.opinion figure.featured { margin: 0; position: absolute; top: 197mm; width: 153mm; height: 230mm; overflow: hidden; left: 10mm;}
+    .page.template6 article.opinion figure figcaption { margin-bottom: 10mm; }
+    .page.template6 article.opinion .overview { top: 132mm; left: 10mm; width: 259mm; font-size: 18pt; }
+    .page.template6 article.opinion .overview p { font-size: 25pt; }
+    .page.template6 article.opinion .content { top: 197mm; left: 169mm; width: 100mm; height: 216mm; columns: 2; }
+
+
+
+    .page.template7 article.opinion {
         position: absolute;
-        top: 42mm;
-        height: 135mm;
-        width: 100mm;
-        overflow: hidden;
-        left: 10mm;
-    }
-    .page.modelo2 .sidebar {
-        top: 54mm;
-        left: 116mm;
-        width: 153mm;
-    }
-    .page.modelo2 .sidebar .chamada{
-       font-size: 18pt;
-    }
-    .page.modelo2 .texto-principal {
-        top: 120mm;
-        left: 10mm;
-        width: 259mm;
-        height: 78mm;
-    }
-
-
-      /* MODEL 3 */
-    .page.modelo3 .titulo{
-        font-size: 2.4rem;
-        width: 154mm;
-    } 
-    .page.modelo3 .foto {
-        margin: 0;
-        position: absolute;
-        top: 52mm;
-        height: 135mm;
-        width: 153mm;
-        overflow: hidden;
-        left: 10mm;
-    }
-    .page.modelo3 .sidebar {
-        top: 165mm;
-        left: 10mm;
-        width: 153mm;
-    }
-    .page.modelo3 .texto-principal {
-        top: 203mm;
-        left: 10mm;
-        width: 154mm;
-        height: 211mm;
-        column-count: 3;
+        top: 24mm;
+        left: 169mm;
+        width: 96mm;
+        height: 392mm;
+        border-left: 1mm solid #dddddd;
+        padding-left: 5mm;
+        background-color: #f9f9f9;
         
     }
 
-    
-
-
-
-
-    /* MODEL 4 */
-    .page.modelo4 .titulo{
-        font-size: 2.4rem; 
-        left: 10mm;
-        width: 253mm;
-    } 
-    .page.modelo4 .foto {
+    .page.template7 article.opinion .author {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        margin-top: 8mm;
+    }
+    .page.template7 article.opinion .author figure {
         margin: 0;
-        position: absolute;
-        top: 57mm;
-        width: 153mm;
-        height: 113mm;
-        overflow: hidden;
-        left: 10mm;
-
+        padding: 0;
     }
-    .page.modelo4 .sidebar {
-        top: 170mm;
-        left: 10mm;
-        width: 153mm;
+    .page.template7 article.opinion .author img {
+        width: 31mm;
+        height: 31mm;
+        border-radius: 100mm;
+        margin-right: 5mm;
+        border: 2mm solid #dddddd;
     }
-    .page.modelo4 .sidebar .chamada{
-       font-size: 18pt;
-    }
-    .page.modelo4 .texto-principal {
-        top: 57mm;
-        left: 169mm;
-        width: 100mm;
-        height: 148mm;
-        columns: 2;
-    }
-
-
-
-    /* MODEL 5 */
-    .page.modelo5 .titulo{
-        font-size: 3.4rem; 
-        left: 10mm;
-        width: 253mm;
-    } 
-    .page.modelo5 .foto {
+    .page.template7 article.opinion .author dl {
         margin: 0;
-        position: absolute;
-        top: 80mm;
-        width: 153mm;
-        height: 393mm;
-        overflow: hidden;
-        left: 10mm;
-
+        padding: 0;
+        text-align: left;
     }
-    .page.modelo5 .foto figcaption {
-        margin-bottom: 10mm;
-    }
-    .page.modelo5 .sidebar {
-        top: 86mm;
-        left: 169mm;
-        width: 100mm;
-    }
-    .page.modelo5 .sidebar .chamada{
-       font-size: 18pt;
-    }
-    .page.modelo5 .texto-principal {
-        top: 145mm;
-        left: 169mm;
-        width: 100mm;
-        height: 268mm;
-        columns: 2;
-    }
-
-
-
-
-    /* MODEL 6 */
-    .page.modelo6 .titulo{
-        font-size: 5.0rem; 
-        left: 10mm;
-        width: 259mm;
-        top: 30mm;
-    } 
-    .page.modelo6 .foto {
+    .page.template7 article.opinion .author dl dt {
+        font-weight: 700;
         margin: 0;
-        position: absolute;
-        top: 197mm;
-        width: 153mm;
-        height: 230mm;
-        overflow: hidden;
-        left: 10mm;
-      
-
+        padding: 0;
     }
-    .page.modelo6 .foto figcaption {
-        margin-bottom: 10mm;
+    .page.template7 article.opinion .author dl dd{
+        font-weight: 300;
+        margin: 0;
+        padding: 0;
     }
-    .page.modelo6 .sidebar {
-        top: 132mm;
-        left: 10mm;
-        width: 259mm;
-        font-size: 18pt;
+    .page.template7 article.opinion .content {
+      column-count: 2;
     }
-    .page.modelo6 .sidebar .chamada{
-       font-size: 25pt;
-    }
-    .page.modelo6 .texto-principal {
-        top: 197mm;
-        left: 169mm;
-        width: 100mm;
-        height: 216mm;
-        columns: 2;
-
+    .page.template7 article.opinion .entry-content {
+        margin-top: 2mm;
     }
     
-
-
-
-
-
+    .page.template7 article.colunista-duascolunas .texto-colunista h2, .page.template7 article.colunista-duascolunas .texto-colunista h2 {
+        margin-top: 0;
+    }
+    .page.template7 article.colunista-duascolunas .texto-colunista figure, .page.template7 article.colunista-duascolunas .texto-colunista figure {
+        margin: 0;
+        padding: 0;
+    }
+    .page.template7 article.colunista-duascolunas .texto-colunista figure img{
+        width: 96mm;
+        margin: 0;
+        padding: 0;
+    }
+    .page.template7 article.colunista-duascolunas .texto-colunista .texto, .page.template7 article.colunista-duascolunas .texto-colunista .texto {
+        font-size: 10.5pt;
+        font-weight: 300;
+        line-height: var(--baseline);
+        hyphens: auto;
+        -webkit-hyphens: auto;
+        column-gap: var(--gutter);
+        column-count:2;
+        border-top: 1mm solid #004f9f;
+        margin-top: 3mm;
+        padding-top: 3mm;
+    }
+    .page.modelo7 article.colunista-duascolunas .texto-colunista .texto p,
+    .page.modelo7 article.colunista-duascolunas .texto-colunista .texto h3  {
+        margin: 0 0 var(--baseline);
+        text-align: left;
+    }
 
      /* ANUNCIOS */
      .page .anuncio.meia {
@@ -408,3 +211,21 @@
         display: block;
     }
 
+
+
+    /* IMPRESSÃO */
+  @media print {
+    body {
+      margin: 0;
+      padding: 0;
+      background: none;
+    }
+    .page {
+      height: auto;
+      box-shadow: none;
+      margin: 0;
+    }
+    .texto-principal{
+        font-size: 4mm;
+    }
+  }
