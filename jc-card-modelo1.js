@@ -10,7 +10,7 @@
       backgroundColor: "#000000",
     },
     brand: {
-      iconUrl: "https://imagens.ne10.uol.com.br/template-unificado/images/jc-new/favicon/ms-icon-144x144.png",
+      iconUrl: "https://imagens.ne10.uol.com.br/veiculos/_midias/png/2024/07/27/logo_jc-27530572.png",
       text: " ",
       textColor: "#fff",
       iconSize: 130,
@@ -359,7 +359,7 @@
     document.getElementById("ig-fg-posy").oninput = (e) => { fgOffsetY = parseInt(e.target.value || "0", 10); applyFgTransform(); };
     document.getElementById("ig-btn-toggle-excerpt").onclick = () => {
       const willReplace = !excerptsHidden;
-      if (willReplace) { if (!pExcerpt.dataset.igOriginal) pExcerpt.dataset.igOriginal = pExcerpt.innerHTML; pExcerpt.innerHTML = "social1.com.br"; }
+      if (willReplace) { if (!pExcerpt.dataset.igOriginal) pExcerpt.dataset.igOriginal = pExcerpt.innerHTML; pExcerpt.innerHTML = "<img style='width:16px; margin:0 6px 0 0;' src='world-globe-white-icon.webp' /> jc.com.br"; }
       else { if (pExcerpt.dataset.igOriginal != null) pExcerpt.innerHTML = pExcerpt.dataset.igOriginal; }
       excerptsHidden = !excerptsHidden;
       document.getElementById("ig-btn-toggle-excerpt").textContent = excerptsHidden ? "🪄 Mostrar resumo" : "🪄 Ocultar resumo";
